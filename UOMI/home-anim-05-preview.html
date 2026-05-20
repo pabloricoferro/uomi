@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UOMI · Preview Home animación 5 · Caída a la O</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Inter, Arial, sans-serif;
+        background: #f3f0ec;
+      }
+      .preview-wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 5rem 1.25rem 4rem;
+      }
+      .preview-note {
+        margin: 0 0 2rem;
+        font-size: 0.9rem;
+        color: #6b6560;
+        line-height: 1.5;
+      }
+      .preview-stage {
+        padding: 4rem 0 6rem;
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid rgba(42, 42, 42, 0.08);
+      }
+    </style>
+  </head>
+  <body class="home-page">
+    <div class="preview-wrap">
+      <h1 style="font-size: 1.35rem; margin: 0 0 0.5rem">Preview · Caída a la O</h1>
+      <p class="preview-note">
+        Caída libre boca abajo (piernas rectas, brazos en movimiento) → entra en el hueco de la
+        <strong>O</strong> y desaparece al pasar el borde inferior. Se repite cada 7 s en Home.
+        Misma lógica que
+        <a href="index.html">Home</a> · <code>data-home-anim="fall-o"</code>.
+      </p>
+      <div class="preview-stage">
+        <section class="container section section-welcome">
+          <div class="home-fig home-fig--5" data-home-anim="fall-o" aria-hidden="true"></div>
+          <div class="section-title-row">
+            <h2>Welcome to U<span class="welcome-uomi-o">O</span>MI</h2>
+            <p>Browse Home, Shop, About and Contact.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

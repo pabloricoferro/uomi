@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UOMI · Preview Home animación 4</title>
+    <style>
+      :root {
+        --bg: #e8e4df;
+        --ink: #2a2a2a;
+        --muted: #6b6560;
+        --accent: #8b7355;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Inter", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+      }
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 2rem 1.25rem 3rem;
+      }
+      h1 {
+        font-family: "Playfair Display", Georgia, serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0 0 0.35rem;
+      }
+      .lede {
+        margin: 0 0 1rem;
+        color: var(--muted);
+        font-size: 0.95rem;
+        line-height: 1.5;
+        max-width: 64ch;
+      }
+      .part-note {
+        margin: 0 0 1.5rem;
+        padding: 0.75rem 1rem;
+        font-size: 0.82rem;
+        line-height: 1.45;
+        color: var(--muted);
+        background: rgba(139, 115, 85, 0.1);
+        border-radius: 8px;
+      }
+      .stage {
+        display: grid;
+        place-items: center;
+        padding: 2.5rem 1rem;
+        background: #f3f0ec;
+        border-radius: 12px;
+        border: 1px solid rgba(42, 42, 42, 0.08);
+      }
+      .stage svg {
+        width: min(280px, 50vw);
+        height: auto;
+        color: var(--ink);
+      }
+      #figRoot {
+        transition: transform 0.32s cubic-bezier(0.34, 1.1, 0.64, 1);
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem 1.25rem;
+        margin-top: 1.25rem;
+      }
+      .frame-label { font-size: 0.85rem; color: var(--muted); }
+      .frame-label span {
+        color: var(--ink);
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+      button {
+        font: inherit;
+        font-size: 0.85rem;
+        padding: 0.45rem 0.9rem;
+        border-radius: 6px;
+        border: 1px solid rgba(42, 42, 42, 0.18);
+        background: #fff;
+        color: var(--ink);
+        cursor: pointer;
+      }
+      button:hover { border-color: var(--accent); }
+      button[aria-pressed="true"] {
+        background: var(--ink);
+        color: #fff;
+        border-color: var(--ink);
+      }
+      .filmstrip { margin-top: 2.5rem; }
+      .filmstrip h2 {
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 1rem;
+      }
+      .frames {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+        gap: 0.55rem;
+      }
+      .frame-card {
+        text-align: center;
+        padding: 0.45rem 0.2rem 0.55rem;
+        background: #f3f0ec;
+        border-radius: 8px;
+        border: 1px solid rgba(42, 42, 42, 0.06);
+        cursor: pointer;
+      }
+      .frame-card:hover,
+      .frame-card.is-active {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px var(--accent);
+      }
+      .frame-card svg { width: 100%; height: 80px; color: var(--ink); }
+      .frame-card figcaption {
+        margin-top: 0.3rem;
+        font-size: 0.65rem;
+        color: var(--muted);
+      }
+      .note {
+        margin-top: 1.5rem;
+        padding: 0.85rem 1rem;
+        font-size: 0.8rem;
+        color: var(--muted);
+        background: rgba(139, 115, 85, 0.08);
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Preview · Home animación 4</h1>
+      <p class="lede">
+        Brazos <strong>10 : 20 : 5</strong>, piernas <strong>15 : 25</strong>. Referencia en 4 poses:
+        brazo R arriba / plié / pierna R en L (muslo horizontal). <strong>14 fotogramas</strong>
+        (7 + 7).
+      </p>
+      <p class="part-note">
+        P1 (f. 1–7): brazos y plié según referencia. P2 (f. 8–14): levanta pierna R, pose L, vuelta
+        al plié.
+      </p>
+
+      <section class="stage" aria-label="Animación 4">
+        <svg
+          id="heroFig"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="-58 -12 118 152"
+          preserveAspectRatio="xMidYMid meet"
+          aria-hidden="true"
+        >
+          <g id="figRoot">
+            <ellipse cx="0" cy="10" rx="5" ry="10" fill="currentColor" />
+            <path
+              fill="currentColor"
+              d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"
+            />
+            <g
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline id="armL" points="-14,32 -16,42 -19,62 -20,67" />
+              <polyline id="armR" points="14,32 16,42 19,62 20,67" />
+              <polyline id="legR" points="6,90 6,105 6,130" />
+              <polyline id="legL" points="-6,90 -6,105 -6,130" />
+            </g>
+          </g>
+        </svg>
+      </section>
+
+      <div class="controls">
+        <p class="frame-label">
+          Fotograma <span id="frameNum">1</span> / <span id="frameTotal">14</span> ·
+          <span id="framePart">—</span> · <span id="frameName">—</span>
+        </p>
+        <button type="button" id="playBtn" aria-pressed="true">Pausar</button>
+        <button type="button" id="stepBtn">Siguiente fotograma</button>
+      </div>
+
+      <section class="filmstrip">
+        <h2>Todos los fotogramas</h2>
+        <div class="frames" id="filmstrip"></div>
+      </section>
+
+      <p class="note">
+        Integrado en <a href="index.html">Home</a> · <code>.home-fig--4</code> (pequeño, abajo
+        izq.) · <code>data-home-anim="figure-4"</code>.
+      </p>
+    </main>
+
+    <script>
+      (function () {
+        const SHOULDER_R = [14, 32];
+        const SHOULDER_L = [-14, 32];
+        const ARM = [10, 20, 5];
+        const HIP_Y = 90;
+        const FOOT_Y = 130;
+        const LEG = [15, 25];
+        const HIP_R_X = 6;
+        const HIP_L_X = -6;
+        const FOOT_R_X = 6;
+        const FOOT_L_X = -6;
+
+        function ptFrom(p, len, deg) {
+          const r = (deg * Math.PI) / 180;
+          return [
+            Math.round((p[0] + len * Math.cos(r)) * 100) / 100,
+            Math.round((p[1] - len * Math.sin(r)) * 100) / 100,
+          ];
+        }
+
+        function chainPts(origin, lengths, angles) {
+          const pts = [origin];
+          let p = origin;
+          for (let i = 0; i < lengths.length; i += 1) {
+            p = ptFrom(p, lengths[i], angles[i]);
+            pts.push(p);
+          }
+          return pts.map(function (pt) {
+            return pt[0] + "," + pt[1];
+          }).join(" ");
+        }
+
+        function arm(side, a1, a2, a3) {
+          const o = side === "r" ? SHOULDER_R : SHOULDER_L;
+          return chainPts(o, ARM, [a1, a2, a3]);
+        }
+
+        function legAng(side, u1, u2) {
+          const hx = side === "r" ? HIP_R_X : HIP_L_X;
+          return chainPts([hx, HIP_Y], LEG, [u1, u2]);
+        }
+
+        function legPlie(side, kneeX) {
+          const hipX = side === "r" ? HIP_R_X : HIP_L_X;
+          const footX = side === "r" ? FOOT_R_X : FOOT_L_X;
+          const dx = kneeX - hipX;
+          const dy = Math.sqrt(Math.max(0, LEG[0] * LEG[0] - dx * dx));
+          const knee = [kneeX, Math.round((HIP_Y + dy) * 100) / 100];
+          return hipX + "," + HIP_Y + " " + knee[0] + "," + knee[1] + " " + footX + "," + FOOT_Y;
+        }
+
+        const ARMS_DOWN = { r: arm("r", 281, 281, 281), l: arm("l", 259, 259, 259) };
+        const ARMS_R_UP_L_DOWN = { r: arm("r", 55, 55, 55), l: arm("l", 235, 235, 235) };
+        const ARMS_R_UP = { r: arm("r", 50, 50, 50), l: arm("l", 259, 259, 259) };
+        const ARMS_HIP_L = {
+          r: arm("r", 50, 50, 50),
+          l: "-14,32 -17,41 -7,58 -5,62",
+        };
+        /* Brazo L fuera del torso (codos hacia la izquierda) */
+        const ARMS_L_OUT = arm("l", 215, 205, 195);
+        const ARMS_POSE4 = { r: arm("r", 50, 50, 50), l: arm("l", 230, 230, 230) };
+        const LEG_VERT = { r: [-90, -90], l: [-90, -90] };
+        const LEG_R_BENT = [215, 255];
+        const LEG_R_LIFT = [180, -90];
+
+        function pose(part, name, bodyY, armR, armL, legR, legL) {
+          const lr = typeof legR[0] === "number" ? legAng("r", legR[0], legR[1]) : legR;
+          const ll = typeof legL[0] === "number" ? legAng("l", legL[0], legL[1]) : legL;
+          return { part, name, bodyY, armR, armL, legR: lr, legL: ll };
+        }
+
+        const SEQUENCE = [
+          /* P1 · referencia poses 1→3 (7 f.) */
+          pose(1, "Reposo", 0, ARMS_DOWN.r, ARMS_DOWN.l, LEG_VERT.r, LEG_VERT.l),
+          pose(1, "Brazo R sube", 0, arm("r", 320, 320, 320), ARMS_DOWN.l, LEG_VERT.r, LEG_VERT.l),
+          pose(1, "R arriba · L abajo", 0, ARMS_R_UP_L_DOWN.r, ARMS_R_UP_L_DOWN.l, LEG_R_BENT, LEG_VERT.l),
+          pose(1, "Mano L a cadera", 0, ARMS_R_UP.r, ARMS_L_OUT, LEG_R_BENT, LEG_VERT.l),
+          pose(1, "Plié inicia", 0, ARMS_HIP_L.r, ARMS_L_OUT, legPlie("r", 8), legPlie("l", -8)),
+          pose(1, "Plié ancho", 0, ARMS_HIP_L.r, ARMS_L_OUT, legPlie("r", 12), legPlie("l", -12)),
+          pose(1, "Plié · brazos ref.", 0, ARMS_HIP_L.r, ARMS_L_OUT, legPlie("r", 14), legPlie("l", -14)),
+
+          /* P2 · pierna R en L + vuelta (7 f.) */
+          pose(2, "Peso en L · R flexiona", 0, ARMS_HIP_L.r, ARMS_L_OUT, [205, 265], LEG_VERT.l),
+          pose(2, "R despega", 0, ARMS_POSE4.r, arm("l", 240, 240, 240), [195, 250], LEG_VERT.l),
+          pose(2, "Muslo R sube", 0, ARMS_POSE4.r, ARMS_POSE4.l, [185, 235], LEG_VERT.l),
+          pose(2, "Muslo R horizontal", 0, ARMS_POSE4.r, ARMS_POSE4.l, [180, -90], LEG_VERT.l),
+          pose(2, "Pose L · ref. 4", -2, ARMS_POSE4.r, ARMS_POSE4.l, LEG_R_LIFT, LEG_VERT.l),
+          pose(2, "R baja", 0, ARMS_R_UP_L_DOWN.r, ARMS_R_UP_L_DOWN.l, [200, 240], LEG_VERT.l),
+          pose(2, "Vuelta al plié", 0, ARMS_HIP_L.r, ARMS_HIP_L.l, legPlie("r", 12), legPlie("l", -12)),
+        ];
+
+        const figRoot = document.getElementById("figRoot");
+        const armL = document.getElementById("armL");
+        const armR = document.getElementById("armR");
+        const legR = document.getElementById("legR");
+        const legL = document.getElementById("legL");
+        const frameNumEl = document.getElementById("frameNum");
+        const frameTotalEl = document.getElementById("frameTotal");
+        const framePartEl = document.getElementById("framePart");
+        const frameNameEl = document.getElementById("frameName");
+        const filmstripEl = document.getElementById("filmstrip");
+        const playBtn = document.getElementById("playBtn");
+        const stepBtn = document.getElementById("stepBtn");
+
+        const BODY_PATH =
+          '<ellipse cx="0" cy="10" rx="5" ry="10" fill="currentColor"/>'
+          + '<path fill="currentColor" d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>';
+
+        let idx = 0;
+        let playing = true;
+        let timer = null;
+        const STEP_MS = 320;
+
+        function applyFrame(frame) {
+          armL.setAttribute("points", frame.armL);
+          armR.setAttribute("points", frame.armR);
+          legR.setAttribute("points", frame.legR);
+          legL.setAttribute("points", frame.legL);
+          figRoot.setAttribute(
+            "transform",
+            frame.bodyY !== 0 ? "translate(0 " + frame.bodyY + ")" : ""
+          );
+        }
+
+        function showFrame(i) {
+          idx = ((i % SEQUENCE.length) + SEQUENCE.length) % SEQUENCE.length;
+          const frame = SEQUENCE[idx];
+          applyFrame(frame);
+          frameNumEl.textContent = String(idx + 1);
+          frameTotalEl.textContent = String(SEQUENCE.length);
+          framePartEl.textContent = "P" + frame.part;
+          frameNameEl.textContent = frame.name;
+          filmstripEl.querySelectorAll(".frame-card").forEach(function (card, n) {
+            card.classList.toggle("is-active", n === idx);
+          });
+        }
+
+        function buildFilmstrip() {
+          SEQUENCE.forEach(function (frame, n) {
+            const card = document.createElement("figure");
+            card.className = "frame-card";
+            const ty = frame.bodyY || 0;
+            card.innerHTML =
+              '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-58 -12 118 152" preserveAspectRatio="xMidYMid meet" aria-hidden="true">'
+              + '<g transform="translate(0 ' + ty + ')">' + BODY_PATH
+              + '<g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
+              + '<polyline points="' + frame.armL + '"/>'
+              + '<polyline points="' + frame.armR + '"/>'
+              + '<polyline points="' + frame.legR + '"/>'
+              + '<polyline points="' + frame.legL + '"/>'
+              + "</g></g></svg>"
+              + "<figcaption>P" + frame.part + " · " + (n + 1) + "</figcaption>";
+            card.addEventListener("click", function () {
+              showFrame(n);
+              scheduleNext(true);
+            });
+            filmstripEl.appendChild(card);
+          });
+        }
+
+        function scheduleNext(fromClick) {
+          if (timer) clearTimeout(timer);
+          if (!playing && !fromClick) return;
+          timer = setTimeout(function () {
+            showFrame(idx + 1);
+            scheduleNext(false);
+          }, STEP_MS);
+        }
+
+        playBtn.addEventListener("click", function () {
+          playing = !playing;
+          playBtn.setAttribute("aria-pressed", String(playing));
+          playBtn.textContent = playing ? "Pausar" : "Reproducir";
+          if (playing) scheduleNext(false);
+          else if (timer) clearTimeout(timer);
+        });
+
+        stepBtn.addEventListener("click", function () {
+          if (timer) clearTimeout(timer);
+          showFrame(idx + 1);
+        });
+
+        buildFilmstrip();
+        showFrame(0);
+        scheduleNext(false);
+      })();
+    </script>
+  </body>
+</html>

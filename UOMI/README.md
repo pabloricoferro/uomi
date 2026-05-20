@@ -28,13 +28,25 @@ A Scandinavian-inspired luxury ceramics gallery showcasing artisan works from se
 
 ## Local Development
 
-Simply open `index.html` in your browser, or use a local server:
+**Recommended (port 3456 — matches Cursor preview):**
 
 ```bash
-# Using Python
-python3 -m http.server 8000
+cd UOMI
+npm install
+npm run dev
+```
 
-# Then visit http://localhost:8000
+Then open **http://localhost:3456/** (Home: `http://localhost:3456/index.html`).
+
+In Cursor: **Terminal → Run Task → "UOMI: servidor local (puerto 3456)"** (keep the terminal open).
+
+**Alternatives:**
+
+```bash
+# Python (any free port)
+python -m http.server 3456
+
+# Or open index.html directly in the browser (no localhost)
 ```
 
 ## Adding New Products

@@ -1,0 +1,12 @@
+{
+  "name": "uomi",
+  "private": true,
+  "description": "UOMI static site — local preview on port 3456",
+  "scripts": {
+    "dev": "serve -l 3456 .",
+    "start": "npm run dev"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}

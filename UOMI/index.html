@@ -17,11 +17,11 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="home-page">
-    <script src="figures.js"></script>
-    <div class="page-bg page-bg-pattern" aria-hidden="true">
-      <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin" width="100%" height="100%">
-        <rect width="100%" height="100%" fill="url(#uomi-pattern)" />
-      </svg>
+    <div class="page-bg page-bg-home" aria-hidden="true">
+      <div class="home-fig home-fig--1" data-home-anim="leg-sway"></div>
+      <div class="home-fig home-fig--2" data-home-anim="egyptian-dance"></div>
+      <div class="home-fig home-fig--3" data-home-anim="ballet" aria-hidden="true"></div>
+      <div class="home-fig home-fig--4" data-home-anim="figure-4" aria-hidden="true"></div>
     </div>
 
     <header class="topbar">
@@ -53,9 +53,14 @@
         </div>
       </section>
 
-      <section class="container section">
+      <section class="container section section-welcome">
+        <div
+          class="home-fig home-fig--5"
+          data-home-anim="fall-o"
+          aria-hidden="true"
+        ></div>
         <div class="section-title-row">
-          <h2>Welcome to UOMI</h2>
+          <h2>Welcome to U<span class="welcome-uomi-o">O</span>MI</h2>
           <p>Browse Home, Shop, About and Contact.</p>
         </div>
       </section>

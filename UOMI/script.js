@@ -408,13 +408,19 @@ if (yearEl) {
   window.setTimeout(bounceUpdate, 120);
 })();
 
-/* Contact: saludo — brazo der. con tramos 1 : 2 : 0.5 (hombro-codo : codo-muñeca : muñeca-mano),
-   misma escala que figures.js (F1 ≈ 10, 20, 5 u SVG). Secuencia 1→…→9 luego 3→2→1. */
+/* Contact: saludo — brazo der. 10:20:5, 15 fotogramas; brazo superior ~45°, antebrazo 90°/110°/70°. */
 (function contactHeroWave() {
   if (!document.body.classList.contains("contact-page")) return;
 
   const arm = document.getElementById("contactWaveRightArm");
   if (!arm) return;
+
+  if (
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    return;
+  }
 
   const F1 = "14,32 16,42 19,62 20,67";
   const F2 = "14,32 24,32 44,32 49,32";
@@ -468,6 +474,748 @@ if (yearEl) {
       if (ev.persisted) {
         runWaveSequence();
       }
+    },
+    { passive: true }
+  );
+})();
+
+/* Home: figuras de fondo animadas (leg-sway, egyptian-dance, …) */
+(function homeBackgroundAnims() {
+  if (!document.body.classList.contains("home-page")) return;
+
+  const reduced =
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const loops = [];
+  const restarters = [];
+
+  const HIP_Y = 90;
+  const FOOT_Y = 130;
+  const LEG_L1 = 15;
+  const HIP_R_X = 6;
+  const HIP_L_X = -6;
+  const FOOT_R_X = 6;
+  const FOOT_L_X = -6;
+  const BODY_UP = 0;
+  const BODY_DOWN = 4;
+
+  function kneePt(hipX, hipY, kneeX) {
+    const dx = kneeX - hipX;
+    const dy = Math.sqrt(Math.max(0, LEG_L1 * LEG_L1 - dx * dx));
+    return [
+      Math.round(kneeX * 100) / 100,
+      Math.round((hipY + dy) * 100) / 100,
+    ];
+  }
+
+  function legPts(hipX, footX, kneeX, bodyY) {
+    const hipY = HIP_Y + bodyY;
+    const k = kneePt(hipX, hipY, kneeX);
+    return `${hipX},${hipY} ${k[0]},${k[1]} ${footX},${FOOT_Y}`;
+  }
+
+  function legSwayFrame(kneeRX, kneeLX, bodyY) {
+    return {
+      r: legPts(HIP_R_X, FOOT_R_X, kneeRX, bodyY),
+      l: legPts(HIP_L_X, FOOT_L_X, kneeLX, bodyY),
+      bodyY,
+    };
+  }
+
+  const LEG_SWAY_SEQUENCE = [
+    legSwayFrame(HIP_R_X, HIP_L_X, BODY_UP),
+    legSwayFrame(0, -12, BODY_DOWN),
+    legSwayFrame(HIP_R_X, HIP_L_X, BODY_UP),
+    legSwayFrame(12, 0, BODY_DOWN),
+    legSwayFrame(HIP_R_X, HIP_L_X, BODY_UP),
+    legSwayFrame(0, -12, BODY_DOWN),
+    legSwayFrame(HIP_R_X, HIP_L_X, BODY_UP),
+    legSwayFrame(12, 0, BODY_DOWN),
+    legSwayFrame(HIP_R_X, HIP_L_X, BODY_UP),
+  ];
+
+  const LEG_SWAY_SVG =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -2 100 140" preserveAspectRatio="xMidYMid meet" aria-hidden="true">'
+    + '<g class="fig-upper">'
+    + '<ellipse cx="0" cy="10" rx="5" ry="10" fill="currentColor"/>'
+    + '<path fill="currentColor" d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>'
+    + '<g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
+    + '<polyline points="14,32 16,42 19,62 20,67"/>'
+    + '<polyline points="-14,32 -16,42 -19,62 -20,67"/>'
+    + "</g></g>"
+    + '<g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
+    + '<polyline class="fig-leg-r" points="6,90 6,105 6,130"/>'
+    + '<polyline class="fig-leg-l" points="-6,90 -6,105 -6,130"/>'
+    + "</g></svg>";
+
+  const LEG_SWAY_STEP_MS = 220;
+
+  function applyLegSwayFrame(root, frame) {
+    root.querySelector(".fig-leg-r").setAttribute("points", frame.r);
+    root.querySelector(".fig-leg-l").setAttribute("points", frame.l);
+    const upper = root.querySelector(".fig-upper");
+    upper.setAttribute(
+      "transform",
+      frame.bodyY ? `translate(0 ${frame.bodyY})` : ""
+    );
+  }
+
+  function startLegSwayLoop(root, startDelay) {
+    let idx = 0;
+    let timers = [];
+
+    function clearTimers() {
+      timers.forEach((id) => clearTimeout(id));
+      timers = [];
+    }
+
+    function tick() {
+      applyLegSwayFrame(root, LEG_SWAY_SEQUENCE[idx]);
+      idx = (idx + 1) % LEG_SWAY_SEQUENCE.length;
+      timers.push(window.setTimeout(tick, LEG_SWAY_STEP_MS));
+    }
+
+    timers.push(window.setTimeout(tick, startDelay));
+
+    const stop = () => clearTimers();
+    loops.push(stop);
+    return stop;
+  }
+
+  function mountLegSway(slot, index) {
+    slot.innerHTML = LEG_SWAY_SVG;
+    const svg = slot.querySelector("svg");
+    applyLegSwayFrame(svg, LEG_SWAY_SEQUENCE[0]);
+    if (!reduced) {
+      startLegSwayLoop(svg, 800 + index * 400);
+    }
+    restarters.push(function () {
+      applyLegSwayFrame(svg, LEG_SWAY_SEQUENCE[0]);
+      if (!reduced) startLegSwayLoop(svg, 800 + index * 400);
+    });
+  }
+
+  /* Anim. 2: baile egipcio — brazos 10:20:5, piernas 15:25, codos/muñecas/rodillas */
+  const SHOULDER_R = [14, 32];
+  const SHOULDER_L = [-14, 32];
+  const ARM_LEN = [10, 20, 5];
+  const LEG_UPPER = 15;
+  const EGYPT_BODY_DOWN = 3;
+  const EGYPT_STEP_MS = 340;
+
+  function ptFrom(p, len, deg) {
+    const r = (deg * Math.PI) / 180;
+    return [
+      Math.round((p[0] + len * Math.cos(r)) * 100) / 100,
+      Math.round((p[1] - len * Math.sin(r)) * 100) / 100,
+    ];
+  }
+
+  function chainPts(origin, lengths, angles) {
+    const pts = [origin];
+    let p = origin;
+    for (let i = 0; i < lengths.length; i += 1) {
+      p = ptFrom(p, lengths[i], angles[i]);
+      pts.push(p);
+    }
+    return pts.map((pt) => `${pt[0]},${pt[1]}`).join(" ");
+  }
+
+  function egyptArm(side, a1, a2, a3) {
+    const o = side === "r" ? SHOULDER_R : SHOULDER_L;
+    return chainPts(o, ARM_LEN, [a1, a2, a3]);
+  }
+
+  function egyptLeg(side, u1, u2, bodyY) {
+    const hipX = side === "r" ? HIP_R_X : HIP_L_X;
+    const hipY = HIP_Y + bodyY;
+    return chainPts([hipX, hipY], [LEG_UPPER, 25], [u1, u2]);
+  }
+
+  function egyptLegPlanted(side, kneeX, bodyY) {
+    const hipX = side === "r" ? HIP_R_X : HIP_L_X;
+    const footX = side === "r" ? FOOT_R_X : FOOT_L_X;
+    const hipY = HIP_Y + bodyY;
+    const dx = kneeX - hipX;
+    const dy = Math.sqrt(Math.max(0, LEG_UPPER * LEG_UPPER - dx * dx));
+    const knee = [kneeX, Math.round((hipY + dy) * 100) / 100];
+    return `${hipX},${hipY} ${knee[0]},${knee[1]} ${footX},${FOOT_Y}`;
+  }
+
+  const EGYPT_LEGS = {
+    straight(bodyY) {
+      return { r: egyptLeg("r", -90, -90, bodyY), l: egyptLeg("l", -90, -90, bodyY) };
+    },
+    plieL(bodyY) {
+      return {
+        r: egyptLegPlanted("r", 0, bodyY),
+        l: egyptLegPlanted("l", -12, bodyY),
+      };
+    },
+  };
+
+  function egyptPose(bodyY, legsFn, aR, aL) {
+    const legs = legsFn(bodyY);
+    return {
+      bodyY,
+      armR: egyptArm("r", aR[0], aR[1], aR[2]),
+      armL: egyptArm("l", aL[0], aL[1], aL[2]),
+      legR: legs.r,
+      legL: legs.l,
+    };
+  }
+
+  const EGYPTIAN_SEQUENCE = [
+    egyptPose(BODY_UP, EGYPT_LEGS.straight, [281, 281, 281], [259, 259, 259]),
+    egyptPose(BODY_UP, EGYPT_LEGS.straight, [0, 0, 0], [180, 180, 180]),
+    egyptPose(BODY_UP, EGYPT_LEGS.straight, [0, 90, 90], [180, -90, -90]),
+    egyptPose(BODY_UP, EGYPT_LEGS.straight, [0, 90, 0], [180, -90, 180]),
+    egyptPose(BODY_UP, EGYPT_LEGS.straight, [0, 90, 180], [180, -90, 0]),
+    egyptPose(EGYPT_BODY_DOWN, EGYPT_LEGS.plieL, [0, 90, 90], [180, 90, 90]),
+    egyptPose(EGYPT_BODY_DOWN, EGYPT_LEGS.plieL, [0, -90, -90], [180, -90, -90]),
+    egyptPose(BODY_UP, EGYPT_LEGS.straight, [0, -90, -90], [180, 90, 90]),
+    egyptPose(BODY_UP, EGYPT_LEGS.straight, [281, 281, 281], [259, 259, 259]),
+  ];
+
+  const EGYPTIAN_SVG =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-55 -14 110 155" preserveAspectRatio="xMidYMid meet" aria-hidden="true">'
+    + '<g class="fig-root">'
+    + '<ellipse cx="0" cy="10" rx="5" ry="10" fill="currentColor"/>'
+    + '<path fill="currentColor" d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>'
+    + '<g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
+    + '<polyline class="fig-arm-l" points="-14,32 -16,42 -19,62 -20,67"/>'
+    + '<polyline class="fig-arm-r" points="14,32 16,42 19,62 20,67"/>'
+    + '<polyline class="fig-leg-r" points="6,90 6,105 6,130"/>'
+    + '<polyline class="fig-leg-l" points="-6,90 -6,105 -6,130"/>'
+    + "</g></g></svg>";
+
+  function applyEgyptianFrame(root, frame) {
+    root.querySelector(".fig-arm-l").setAttribute("points", frame.armL);
+    root.querySelector(".fig-arm-r").setAttribute("points", frame.armR);
+    root.querySelector(".fig-leg-r").setAttribute("points", frame.legR);
+    root.querySelector(".fig-leg-l").setAttribute("points", frame.legL);
+    root.querySelector(".fig-root").setAttribute(
+      "transform",
+      frame.bodyY ? `translate(0 ${frame.bodyY})` : ""
+    );
+  }
+
+  function startEgyptianLoop(root, startDelay) {
+    let idx = 0;
+    let timers = [];
+
+    function clearTimers() {
+      timers.forEach((id) => clearTimeout(id));
+      timers = [];
+    }
+
+    function tick() {
+      applyEgyptianFrame(root, EGYPTIAN_SEQUENCE[idx]);
+      idx = (idx + 1) % EGYPTIAN_SEQUENCE.length;
+      timers.push(window.setTimeout(tick, EGYPT_STEP_MS));
+    }
+
+    timers.push(window.setTimeout(tick, startDelay));
+    const stop = () => clearTimers();
+    loops.push(stop);
+    return stop;
+  }
+
+  function mountEgyptian(slot, index) {
+    slot.innerHTML = EGYPTIAN_SVG;
+    const svg = slot.querySelector("svg");
+    applyEgyptianFrame(svg, EGYPTIAN_SEQUENCE[0]);
+    if (!reduced) {
+      startEgyptianLoop(svg, 1200 + index * 400);
+    }
+    restarters.push(function () {
+      applyEgyptianFrame(svg, EGYPTIAN_SEQUENCE[0]);
+      if (!reduced) startEgyptianLoop(svg, 1200 + index * 400);
+    });
+  }
+
+  /* Anim. 3: ballet — misma secuencia que home-anim-03-preview.html */
+  const BALLET_LEG = [15, 25];
+  const BALLET_STEP_MS = 300;
+
+  function balletArm(side, a1, a2, a3) {
+    const o = side === "r" ? SHOULDER_R : SHOULDER_L;
+    return chainPts(o, ARM_LEN, [a1, a2, a3]);
+  }
+
+  function balletLegAng(side, u1, u2) {
+    const hipX = side === "r" ? HIP_R_X : HIP_L_X;
+    return chainPts([hipX, HIP_Y], BALLET_LEG, [u1, u2]);
+  }
+
+  function balletLegPlie(side, kneeX) {
+    const hipX = side === "r" ? HIP_R_X : HIP_L_X;
+    const footX = side === "r" ? FOOT_R_X : FOOT_L_X;
+    const dx = kneeX - hipX;
+    const dy = Math.sqrt(Math.max(0, BALLET_LEG[0] * BALLET_LEG[0] - dx * dx));
+    const knee = [kneeX, Math.round((HIP_Y + dy) * 100) / 100];
+    return `${hipX},${HIP_Y} ${knee[0]},${knee[1]} ${footX},${FOOT_Y}`;
+  }
+
+  const BALLET_ARMS_T = {
+    r: balletArm("r", 0, 0, 0),
+    l: balletArm("l", 180, 180, 180),
+  };
+  const BALLET_ARMS_UP_50 = {
+    r: balletArm("r", 50, 50, 50),
+    l: balletArm("l", 130, 130, 130),
+  };
+  const BALLET_ARMS_DOWN_45 = {
+    r: balletArm("r", 315, 315, 315),
+    l: balletArm("l", 225, 225, 225),
+  };
+  const BALLET_ARMS_DOWN_MORE = {
+    r: balletArm("r", 285, 285, 285),
+    l: balletArm("l", 255, 255, 255),
+  };
+  const BALLET_ARMS_HIP = {
+    r: "14,32 17,41 7,58 5,62",
+    l: "-14,32 -17,41 -7,58 -5,62",
+  };
+  const BALLET_LEG_VERT = { r: [-90, -90], l: [-90, -90] };
+
+  function balletPose(bodyY, armR, armL, legR, legL) {
+    const lr =
+      typeof legR[0] === "number"
+        ? balletLegAng("r", legR[0], legR[1])
+        : legR;
+    const ll =
+      typeof legL[0] === "number"
+        ? balletLegAng("l", legL[0], legL[1])
+        : legL;
+    return { bodyY, armR, armL, legR: lr, legL: ll };
+  }
+
+  const BALLET_SEQUENCE = [
+    balletPose(0, balletArm("r", 281, 281, 281), balletArm("l", 259, 259, 259), BALLET_LEG_VERT.r, BALLET_LEG_VERT.l),
+    balletPose(0, balletArm("r", 320, 320, 320), balletArm("l", 220, 220, 220), BALLET_LEG_VERT.r, BALLET_LEG_VERT.l),
+    balletPose(0, BALLET_ARMS_T.r, BALLET_ARMS_T.l, BALLET_LEG_VERT.r, BALLET_LEG_VERT.l),
+    balletPose(0, BALLET_ARMS_T.r, BALLET_ARMS_T.l, BALLET_LEG_VERT.r, [-121, -121]),
+    balletPose(0, BALLET_ARMS_T.r, BALLET_ARMS_T.l, BALLET_LEG_VERT.r, [180, -90]),
+    balletPose(0, BALLET_ARMS_T.r, BALLET_ARMS_T.l, BALLET_LEG_VERT.r, [180, 180]),
+    balletPose(0, BALLET_ARMS_T.r, BALLET_ARMS_T.l, BALLET_LEG_VERT.r, [120, 140]),
+    balletPose(0, BALLET_ARMS_DOWN_45.r, BALLET_ARMS_DOWN_45.l, BALLET_LEG_VERT.r, [125, 200]),
+    balletPose(0, BALLET_ARMS_DOWN_MORE.r, BALLET_ARMS_DOWN_MORE.l, BALLET_LEG_VERT.r, [128, 245]),
+    balletPose(0, BALLET_ARMS_HIP.r, BALLET_ARMS_HIP.l, BALLET_LEG_VERT.r, [-90, -90]),
+    balletPose(4, BALLET_ARMS_HIP.r, BALLET_ARMS_HIP.l, balletLegPlie("r", 10), balletLegPlie("l", -10)),
+    balletPose(4, BALLET_ARMS_HIP.r, BALLET_ARMS_HIP.l, balletLegPlie("r", 14), balletLegPlie("l", -14)),
+    balletPose(-5, BALLET_ARMS_T.r, BALLET_ARMS_T.l, BALLET_LEG_VERT.r, BALLET_LEG_VERT.l),
+    balletPose(-13, BALLET_ARMS_UP_50.r, BALLET_ARMS_UP_50.l, BALLET_LEG_VERT.r, BALLET_LEG_VERT.l),
+    balletPose(-5, BALLET_ARMS_T.r, BALLET_ARMS_T.l, BALLET_LEG_VERT.r, BALLET_LEG_VERT.l),
+    balletPose(4, BALLET_ARMS_HIP.r, BALLET_ARMS_HIP.l, balletLegPlie("r", 14), balletLegPlie("l", -14)),
+  ];
+
+  const BALLET_SVG =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-58 -12 118 152" preserveAspectRatio="xMidYMid meet" aria-hidden="true">'
+    + '<g class="fig-root">'
+    + '<ellipse cx="0" cy="10" rx="5" ry="10" fill="currentColor"/>'
+    + '<path fill="currentColor" d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>'
+    + '<g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
+    + '<polyline class="fig-arm-l" points="-14,32 -16,42 -19,62 -20,67"/>'
+    + '<polyline class="fig-arm-r" points="14,32 16,42 19,62 20,67"/>'
+    + '<polyline class="fig-leg-r" points="6,90 6,105 6,130"/>'
+    + '<polyline class="fig-leg-l" points="-6,90 -6,105 -6,130"/>'
+    + "</g></g></svg>";
+
+  function applyBalletFrame(root, frame) {
+    root.querySelector(".fig-arm-l").setAttribute("points", frame.armL);
+    root.querySelector(".fig-arm-r").setAttribute("points", frame.armR);
+    root.querySelector(".fig-leg-r").setAttribute("points", frame.legR);
+    root.querySelector(".fig-leg-l").setAttribute("points", frame.legL);
+    root.querySelector(".fig-root").setAttribute(
+      "transform",
+      frame.bodyY !== 0 ? `translate(0 ${frame.bodyY})` : ""
+    );
+  }
+
+  function startBalletLoop(root, startDelay) {
+    let idx = 0;
+    let timers = [];
+
+    function clearTimers() {
+      timers.forEach((id) => clearTimeout(id));
+      timers = [];
+    }
+
+    function tick() {
+      applyBalletFrame(root, BALLET_SEQUENCE[idx]);
+      idx = (idx + 1) % BALLET_SEQUENCE.length;
+      timers.push(window.setTimeout(tick, BALLET_STEP_MS));
+    }
+
+    timers.push(window.setTimeout(tick, startDelay));
+    const stop = () => clearTimers();
+    loops.push(stop);
+    return stop;
+  }
+
+  function mountBallet(slot, index) {
+    slot.innerHTML = BALLET_SVG;
+    const svg = slot.querySelector("svg");
+    applyBalletFrame(svg, BALLET_SEQUENCE[0]);
+    if (!reduced) {
+      startBalletLoop(svg, 1600 + index * 400);
+    }
+    restarters.push(function () {
+      applyBalletFrame(svg, BALLET_SEQUENCE[0]);
+      if (!reduced) startBalletLoop(svg, 1600 + index * 400);
+    });
+  }
+
+  /* Anim. 4: brazos + plié + pierna R en L — home-anim-04-preview.html */
+  const FIG4_STEP_MS = 320;
+  const FIG4_ARMS_DOWN = {
+    r: balletArm("r", 281, 281, 281),
+    l: balletArm("l", 259, 259, 259),
+  };
+  const FIG4_ARMS_R_UP_L_DOWN = {
+    r: balletArm("r", 55, 55, 55),
+    l: balletArm("l", 235, 235, 235),
+  };
+  const FIG4_ARMS_R_UP = {
+    r: balletArm("r", 50, 50, 50),
+    l: balletArm("l", 259, 259, 259),
+  };
+  const FIG4_ARMS_HIP_L = {
+    r: balletArm("r", 50, 50, 50),
+    l: "-14,32 -17,41 -7,58 -5,62",
+  };
+  const FIG4_ARMS_L_OUT = balletArm("l", 215, 205, 195);
+  const FIG4_ARMS_POSE4 = {
+    r: balletArm("r", 50, 50, 50),
+    l: balletArm("l", 230, 230, 230),
+  };
+  const FIG4_LEG_VERT = { r: [-90, -90], l: [-90, -90] };
+  const FIG4_LEG_R_BENT = [215, 255];
+  const FIG4_LEG_R_LIFT = [180, -90];
+
+  const FIG4_SEQUENCE = [
+    balletPose(0, FIG4_ARMS_DOWN.r, FIG4_ARMS_DOWN.l, FIG4_LEG_VERT.r, FIG4_LEG_VERT.l),
+    balletPose(0, balletArm("r", 320, 320, 320), FIG4_ARMS_DOWN.l, FIG4_LEG_VERT.r, FIG4_LEG_VERT.l),
+    balletPose(0, FIG4_ARMS_R_UP_L_DOWN.r, FIG4_ARMS_R_UP_L_DOWN.l, FIG4_LEG_R_BENT, FIG4_LEG_VERT.l),
+    balletPose(0, FIG4_ARMS_R_UP.r, FIG4_ARMS_L_OUT, FIG4_LEG_R_BENT, FIG4_LEG_VERT.l),
+    balletPose(0, FIG4_ARMS_HIP_L.r, FIG4_ARMS_L_OUT, balletLegPlie("r", 8), balletLegPlie("l", -8)),
+    balletPose(0, FIG4_ARMS_HIP_L.r, FIG4_ARMS_L_OUT, balletLegPlie("r", 12), balletLegPlie("l", -12)),
+    balletPose(0, FIG4_ARMS_HIP_L.r, FIG4_ARMS_L_OUT, balletLegPlie("r", 14), balletLegPlie("l", -14)),
+    balletPose(0, FIG4_ARMS_HIP_L.r, FIG4_ARMS_L_OUT, [205, 265], FIG4_LEG_VERT.l),
+    balletPose(0, FIG4_ARMS_POSE4.r, balletArm("l", 240, 240, 240), [195, 250], FIG4_LEG_VERT.l),
+    balletPose(0, FIG4_ARMS_POSE4.r, FIG4_ARMS_POSE4.l, [185, 235], FIG4_LEG_VERT.l),
+    balletPose(0, FIG4_ARMS_POSE4.r, FIG4_ARMS_POSE4.l, FIG4_LEG_R_LIFT, FIG4_LEG_VERT.l),
+    balletPose(-2, FIG4_ARMS_POSE4.r, FIG4_ARMS_POSE4.l, FIG4_LEG_R_LIFT, FIG4_LEG_VERT.l),
+    balletPose(0, FIG4_ARMS_R_UP_L_DOWN.r, FIG4_ARMS_R_UP_L_DOWN.l, [200, 240], FIG4_LEG_VERT.l),
+    balletPose(0, FIG4_ARMS_HIP_L.r, FIG4_ARMS_HIP_L.l, balletLegPlie("r", 12), balletLegPlie("l", -12)),
+  ];
+
+  const FIG4_SVG = BALLET_SVG;
+
+  function applyFig4Frame(root, frame) {
+    applyBalletFrame(root, frame);
+  }
+
+  function startFig4Loop(root, startDelay) {
+    let idx = 0;
+    let timers = [];
+
+    function clearTimers() {
+      timers.forEach((id) => clearTimeout(id));
+      timers = [];
+    }
+
+    function tick() {
+      applyFig4Frame(root, FIG4_SEQUENCE[idx]);
+      idx = (idx + 1) % FIG4_SEQUENCE.length;
+      timers.push(window.setTimeout(tick, FIG4_STEP_MS));
+    }
+
+    timers.push(window.setTimeout(tick, startDelay));
+    const stop = () => clearTimers();
+    loops.push(stop);
+    return stop;
+  }
+
+  function mountFig4(slot, index) {
+    slot.innerHTML = FIG4_SVG;
+    const svg = slot.querySelector("svg");
+    applyFig4Frame(svg, FIG4_SEQUENCE[0]);
+    if (!reduced) {
+      startFig4Loop(svg, 2000 + index * 400);
+    }
+    restarters.push(function () {
+      applyFig4Frame(svg, FIG4_SEQUENCE[0]);
+      if (!reduced) startFig4Loop(svg, 2000 + index * 400);
+    });
+  }
+
+  /* Anim. 5: caída boca abajo (brazos/piernas en movimiento) → O → absorción */
+  const FALL_O_SVG =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -2 100 140" preserveAspectRatio="xMidYMid meet" aria-hidden="true">'
+    + '<g class="fig-root">'
+    + '<ellipse cx="0" cy="10" rx="5" ry="10" fill="currentColor"/>'
+    + '<path fill="currentColor" d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>'
+    + '<g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
+    + '<polyline class="fig-arm-r" points="14,32 16,42 19,62 20,67"/>'
+    + '<polyline class="fig-arm-l" points="-14,32 -16,42 -19,62 -20,67"/>'
+    + '<polyline class="fig-leg-r" points="6,90 6,105 6,130"/>'
+    + '<polyline class="fig-leg-l" points="-6,90 -6,105 -6,130"/>'
+    + "</g></g></svg>";
+
+  const FALL_ROTATE = "rotate(180 0 70)";
+  const FALL_FLAIL_STEP_MS = 180;
+
+  function fallArm(side, a1, a2, a3) {
+    const o = side === "r" ? SHOULDER_R : SHOULDER_L;
+    return chainPts(o, ARM_LEN, [a1, a2, a3]);
+  }
+
+  const FALL_INTERVAL_MS = 7000;
+  const FALL_LEGS_STRAIGHT = {
+    r: legPts(HIP_R_X, FOOT_R_X, HIP_R_X, 0),
+    l: legPts(HIP_L_X, FOOT_L_X, HIP_L_X, 0),
+  };
+
+  const FALL_FLAIL_SEQUENCE = [
+    { armR: [20, 70, 55], armL: [160, 110, 120] },
+    { armR: [35, 80, 60], armL: [155, 100, 115] },
+    { armR: [10, 75, 50], armL: [165, 105, 125] },
+    { armR: [25, 85, 65], armL: [150, 95, 110] },
+  ];
+
+  function fallFlailIndex(elapsedMs) {
+    const len = FALL_FLAIL_SEQUENCE.length;
+    const i = Math.floor(Math.max(0, elapsedMs) / FALL_FLAIL_STEP_MS) % len;
+    return ((i % len) + len) % len;
+  }
+
+  function applyFallFlailFrame(svg, frame) {
+    if (!svg || !frame) return;
+    const root = svg.querySelector(".fig-root");
+    if (!root) return;
+    root.querySelector(".fig-arm-r").setAttribute("points", fallArm("r", frame.armR[0], frame.armR[1], frame.armR[2]));
+    root.querySelector(".fig-arm-l").setAttribute("points", fallArm("l", frame.armL[0], frame.armL[1], frame.armL[2]));
+    root.querySelector(".fig-leg-r").setAttribute("points", FALL_LEGS_STRAIGHT.r);
+    root.querySelector(".fig-leg-l").setAttribute("points", FALL_LEGS_STRAIGHT.l);
+    root.setAttribute("transform", FALL_ROTATE);
+  }
+
+  const FALL_VIEW_FOOT_Y = 130;
+  const FALL_VIEW_TOP_Y = -12;
+  const FALL_VIEW_HEIGHT = 152;
+
+  function mountFallO(slot) {
+    const oEl = document.querySelector(".welcome-uomi-o");
+    if (!oEl) return;
+
+    slot.innerHTML = FALL_O_SVG;
+    const svg = slot.querySelector("svg");
+    applyFallFlailFrame(svg, FALL_FLAIL_SEQUENCE[0]);
+
+    let rafId = 0;
+    let timeoutIds = [];
+    let cycleStart = 0;
+
+    function isHomeVisible() {
+      return (
+        !document.hidden && document.body.classList.contains("home-page")
+      );
+    }
+
+    const clearAll = () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = 0;
+      timeoutIds.forEach((id) => clearTimeout(id));
+      timeoutIds = [];
+    };
+
+    function footInsetPx() {
+      return slot.offsetHeight * ((FALL_VIEW_FOOT_Y - FALL_VIEW_TOP_Y) / FALL_VIEW_HEIGHT);
+    }
+
+    /* Contador de la O (Inter): centro = hueco; desaparición en borde inferior del hueco */
+    const O_HOLE = {
+      cx: 0.5,
+      cy: 0.5,
+      rx: 0.14,
+      ry: 0.17,
+    };
+    O_HOLE.entryY = O_HOLE.cy - O_HOLE.ry;
+    O_HOLE.exitY = O_HOLE.cy + O_HOLE.ry;
+
+    function holeViewport(oRect) {
+      return {
+        cx: oRect.left + oRect.width * O_HOLE.cx,
+        cy: oRect.top + oRect.height * O_HOLE.cy,
+        top: oRect.top + oRect.height * O_HOLE.entryY,
+        bottom: oRect.top + oRect.height * O_HOLE.exitY,
+        rx: oRect.width * O_HOLE.rx,
+        ry: oRect.height * O_HOLE.ry,
+      };
+    }
+
+    function enterHoleClip(slotRect, oRect) {
+      const hole = holeViewport(oRect);
+      const cx = hole.cx - slotRect.left;
+      const cy = hole.cy - slotRect.top;
+      const clipBottom = Math.max(0, slotRect.bottom - hole.bottom);
+      const top = Math.max(0, hole.top - slotRect.top);
+      const right = Math.max(0, slotRect.right - oRect.right);
+      const bottom = Math.max(clipBottom, slotRect.bottom - oRect.bottom);
+      const left = Math.max(0, oRect.left - slotRect.left);
+      return `ellipse(${hole.rx}px ${hole.ry}px at ${cx}px ${cy}px), inset(${top}px ${right}px ${bottom}px ${left}px)`;
+    }
+
+    function measure() {
+      const o = oEl.getBoundingClientRect();
+      const w = slot.offsetWidth;
+      const h = slot.offsetHeight;
+      const foot = footInsetPx();
+      const hole = holeViewport(o);
+      const targetHeadY = hole.top;
+      const throughHole = hole.bottom - hole.top + h * 0.35;
+      return {
+        left: o.left + o.width / 2 - w / 2,
+        startY: -h - 16,
+        endY: targetHeadY - foot,
+        enterDepth: throughHole,
+      };
+    }
+
+    function scheduleNextCycle() {
+      if (!isHomeVisible()) return;
+      const wait = Math.max(0, FALL_INTERVAL_MS - (performance.now() - cycleStart));
+      timeoutIds.push(window.setTimeout(runCycle, wait));
+    }
+
+    function runCycle() {
+      if (!isHomeVisible()) return;
+      clearAll();
+      cycleStart = performance.now();
+      slot.style.clipPath = "none";
+      slot.style.visibility = "visible";
+      applyFallFlailFrame(svg, FALL_FLAIL_SEQUENCE[0]);
+
+      const m = measure();
+      slot.style.left = `${m.left}px`;
+
+      const fallMs = 2200;
+      const enterMs = 1100;
+      const t0 = performance.now();
+
+      function fallFrame(now) {
+        const t = Math.min(1, (now - t0) / fallMs);
+        const y = m.startY + (m.endY - m.startY) * t;
+        applyFallFlailFrame(svg, FALL_FLAIL_SEQUENCE[fallFlailIndex(now - t0)]);
+        slot.style.clipPath = "none";
+        slot.style.transform = `translate3d(0,${y}px,0)`;
+        if (t < 1) {
+          rafId = requestAnimationFrame(fallFrame);
+          return;
+        }
+        const t1 = performance.now();
+
+        function enterFrame(now) {
+          const u = Math.min(1, (now - t1) / enterMs);
+          const y = m.endY + m.enterDepth * u;
+          applyFallFlailFrame(svg, FALL_FLAIL_SEQUENCE[fallFlailIndex(now - t1)]);
+          slot.style.transform = `translate3d(0,${y}px,0)`;
+          const oNow = oEl.getBoundingClientRect();
+          const slotNow = slot.getBoundingClientRect();
+          slot.style.clipPath = enterHoleClip(slotNow, oNow);
+          if (u < 1) {
+            rafId = requestAnimationFrame(enterFrame);
+            return;
+          }
+          slot.style.clipPath = "none";
+          slot.style.visibility = "hidden";
+          slot.style.transform = "";
+          scheduleNextCycle();
+        }
+
+        rafId = requestAnimationFrame(enterFrame);
+      }
+
+      slot.style.transform = `translate3d(0,${m.startY}px,0)`;
+      rafId = requestAnimationFrame(fallFrame);
+    }
+
+    const onResize = () => {
+      clearAll();
+      runCycle();
+    };
+
+    const onVisibility = () => {
+      if (!isHomeVisible()) {
+        clearAll();
+        return;
+      }
+      if (!rafId && !timeoutIds.length) {
+        runCycle();
+      }
+    };
+
+    if (!reduced) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(runCycle);
+      });
+      window.addEventListener("resize", onResize, { passive: true });
+      document.addEventListener("visibilitychange", onVisibility);
+    }
+
+    const stop = () => {
+      clearAll();
+      window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibility);
+      slot.style.clipPath = "none";
+      slot.style.visibility = "hidden";
+      slot.style.transform = "";
+    };
+
+    loops.push(stop);
+    restarters.push(function () {
+      stop();
+      if (!reduced) {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(runCycle);
+        });
+        window.addEventListener("resize", onResize, { passive: true });
+        document.addEventListener("visibilitychange", onVisibility);
+      }
+    });
+  }
+
+  let figIndex = 0;
+  document.querySelectorAll(".home-fig[data-home-anim]").forEach((slot) => {
+    const type = slot.getAttribute("data-home-anim");
+    if (type === "leg-sway") {
+      mountLegSway(slot, figIndex);
+      figIndex += 1;
+    } else if (type === "egyptian-dance") {
+      mountEgyptian(slot, figIndex);
+      figIndex += 1;
+    } else if (type === "ballet") {
+      mountBallet(slot, figIndex);
+      figIndex += 1;
+    } else if (type === "figure-4") {
+      mountFig4(slot, figIndex);
+      figIndex += 1;
+    } else if (type === "fall-o") {
+      mountFallO(slot);
+      figIndex += 1;
+    }
+  });
+
+  window.addEventListener(
+    "pageshow",
+    (ev) => {
+      if (!ev.persisted) return;
+      loops.forEach((stop) => stop());
+      loops.length = 0;
+      restarters.forEach((restart) => restart());
     },
     { passive: true }
   );
