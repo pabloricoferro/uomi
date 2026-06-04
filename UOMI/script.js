@@ -1036,12 +1036,15 @@ if (yearEl) {
       return slot.offsetHeight * ((FALL_VIEW_FOOT_Y - FALL_VIEW_TOP_Y) / FALL_VIEW_HEIGHT);
     }
 
-    /* Contador de la O (Inter): centro = hueco; desaparición en borde inferior del hueco */
+    /* Hueco interior de la "O" en Inter (proporciones relativas al bounding-box del span).
+       ry = 0.38 → hole.bottom al 88 % de la altura del glyph, justo en el borde
+       inferior interior de la O. Subir ry si la figura desaparece demasiado pronto;
+       bajarlo si desaparece demasiado tarde. */
     const O_HOLE = {
-      cx: 0.5,
-      cy: 0.5,
-      rx: 0.14,
-      ry: 0.17,
+      cx: 0.50,
+      cy: 0.50,
+      rx: 0.28,
+      ry: 0.30,
     };
     O_HOLE.entryY = O_HOLE.cy - O_HOLE.ry;
     O_HOLE.exitY = O_HOLE.cy + O_HOLE.ry;
@@ -1066,7 +1069,9 @@ if (yearEl) {
       const right = Math.max(0, slotRect.right - oRect.right);
       const bottom = Math.max(clipBottom, slotRect.bottom - oRect.bottom);
       const left = Math.max(0, oRect.left - slotRect.left);
-      return `ellipse(${hole.rx}px ${hole.ry}px at ${cx}px ${cy}px), inset(${top}px ${right}px ${bottom}px ${left}px)`;
+      /* clip-path solo acepta una forma básica: usamos la elipse del hueco de la O.
+         La figura se hace visible únicamente dentro del oval del hueco y desaparece al salir. */
+      return `ellipse(${hole.rx}px ${hole.ry}px at ${cx}px ${cy}px)`;
     }
 
     function measure() {
@@ -1125,7 +1130,17 @@ if (yearEl) {
           slot.style.transform = `translate3d(0,${y}px,0)`;
           const oNow = oEl.getBoundingClientRect();
           const slotNow = slot.getBoundingClientRect();
-          slot.style.clipPath = enterHoleClip(slotNow, oNow);
+          const hole = holeViewport(oNow);
+          // El clip arranca exactamente cuando el fondo del slot llega al borde
+          // inferior del hueco (clipFromBottom = 0 → transición sin salto).
+          // A medida que la figura sigue cayendo, el recorte crece y las piernas
+          // desaparecen progresivamente por debajo del borde inferior de la O.
+          if (slotNow.bottom >= hole.bottom) {
+            const clipFromBottom = slotNow.bottom - hole.bottom;
+            slot.style.clipPath = `inset(0 0 ${clipFromBottom}px 0)`;
+          } else {
+            slot.style.clipPath = "none";
+          }
           if (u < 1) {
             rafId = requestAnimationFrame(enterFrame);
             return;

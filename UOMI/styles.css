@@ -20,6 +20,10 @@ body {
   color: var(--text);
   background: var(--bg);
   line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  min-height: 100vh;
 }
 
 .container {
@@ -179,6 +183,20 @@ body {
   z-index: 2;
 }
 
+/* Rellena el hueco interno de la O con negro (proporciones = O_HOLE: cx.50 cy.50 rx.28 ry.30) */
+.section-welcome .welcome-uomi-o::before {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 22%;
+  right: 22%;
+  bottom: 20%;
+  background: currentColor;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .section-welcome .home-fig--5 {
     display: none;
@@ -210,10 +228,17 @@ body {
 }
 
 /* Aseguramos que el contenido vaya por encima del fondo fijo */
-main,
+main {
+  position: relative;
+  z-index: 1;
+  flex: 1 0 auto;
+}
+
 .footer {
   position: relative;
   z-index: 1;
+  flex-shrink: 0;
+  margin-top: auto;
 }
 
 .nav {
@@ -293,6 +318,10 @@ nav a:hover {
   max-width: 720px;
 }
 
+.hero-title {
+  margin-bottom: 14px;
+}
+
 .kicker {
   margin: 0 0 8px;
   text-transform: uppercase;
@@ -316,7 +345,8 @@ h1 {
   letter-spacing: -0.02em;
 }
 
-.hero p {
+.hero p,
+.hero-lead {
   margin: 0;
   color: var(--muted);
   font-size: 1.06rem;
