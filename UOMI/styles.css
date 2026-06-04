@@ -567,6 +567,12 @@ h1 {
   margin-top: 10px;
 }
 
+.about-prose {
+  text-align: justify;
+  text-align-last: justify;
+  hyphens: auto;
+}
+
 .contact a {
   color: #111;
 }
