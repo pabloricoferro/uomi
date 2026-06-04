@@ -165,6 +165,13 @@ body {
   z-index: 2;
 }
 
+.section-welcome h2 {
+  font-size: clamp(2.25rem, 10vw, 4.5rem);
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
 .section-welcome .welcome-uomi-o {
   display: inline-block;
   vertical-align: baseline;
