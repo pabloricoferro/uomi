@@ -28,8 +28,15 @@
           <a href="about.html">About</a>
           <a href="contact.html">Contact</a>
         </nav>
-        <button class="cart-btn" id="cartButton" aria-label="Shopping cart">
-          <span class="cart-icon" aria-hidden="true">🛒</span>
+        <button class="cart-btn" id="cartButton" aria-label="Open cart">
+          <span class="cart-icon" aria-hidden="true">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+          </span>
           <span class="cart-count" id="cartCount">0</span>
         </button>
       </div>
@@ -121,6 +128,21 @@
         <p>&copy; <span id="year"></span> UOMI. All rights reserved.</p>
       </div>
     </footer>
+
+    <!-- Cart overlay + drawer -->
+    <div class="cart-overlay" id="cartOverlay" role="presentation"></div>
+    <aside class="cart-drawer" id="cartDrawer" role="dialog" aria-label="Your selection" aria-modal="true">
+      <div class="cart-drawer-header">
+        <h3>Your Selection</h3>
+        <button class="cart-drawer-close" id="cartClose" aria-label="Close cart">&#x2715;</button>
+      </div>
+      <div class="cart-body" id="cartBody">
+        <p class="cart-empty-msg">Your selection is empty.<br>Add a piece to get started.</p>
+      </div>
+      <div class="cart-drawer-footer" id="cartFooter" hidden>
+        <p class="cart-stripe-note">Each piece is purchased separately via a secure Stripe payment page.</p>
+      </div>
+    </aside>
 
     <script src="script.js"></script>
   </body>

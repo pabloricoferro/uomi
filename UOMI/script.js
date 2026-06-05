@@ -1214,36 +1214,22 @@ if (yearEl) {
 
 /* ═══════════════════════════════════════════════════════════════════════════
    GLOBAL CART — runs on every page
-   Injects drawer HTML, persists state in localStorage.
+   Drawer HTML lives in each page's HTML. This block only manages state,
+   events, and localStorage persistence.
 ═══════════════════════════════════════════════════════════════════════════ */
 (function globalCart() {
-  /* ── Inject overlay + drawer ──────────────────────────────────────── */
-  var overlay = document.createElement("div");
-  overlay.id = "cartOverlay";
-  overlay.className = "cart-overlay";
-  overlay.setAttribute("role", "presentation");
-  document.body.appendChild(overlay);
+  /* ── Required DOM elements (present in every page's HTML) ────────── */
+  var cartBtn     = document.getElementById("cartButton");
+  var cartOverlay = document.getElementById("cartOverlay");
+  var cartDrawer  = document.getElementById("cartDrawer");
+  var cartClose   = document.getElementById("cartClose");
+  var cartBody    = document.getElementById("cartBody");
+  var cartFooter  = document.getElementById("cartFooter");
+  var cartCountEl = document.getElementById("cartCount");
 
-  var drawer = document.createElement("aside");
-  drawer.id = "cartDrawer";
-  drawer.className = "cart-drawer";
-  drawer.setAttribute("role", "dialog");
-  drawer.setAttribute("aria-label", "Your selection");
-  drawer.setAttribute("aria-modal", "true");
-  drawer.innerHTML =
-    '<div class="cart-drawer-header">'
-      + '<h3>Your Selection</h3>'
-      + '<button class="cart-drawer-close" id="cartClose" aria-label="Close cart">\u2715</button>'
-    + '</div>'
-    + '<div class="cart-body" id="cartBody">'
-      + '<p class="cart-empty-msg">Your selection is empty.<br>Add a piece to get started.</p>'
-    + '</div>'
-    + '<div class="cart-drawer-footer" id="cartFooter" hidden>'
-      + '<p class="cart-stripe-note">Each piece is purchased separately via a secure Stripe payment page.</p>'
-    + '</div>';
-  document.body.appendChild(drawer);
+  if (!cartBtn || !cartDrawer) return; // page not set up yet — bail safely
 
-  /* ── Toast container ──────────────────────────────────────────────── */
+  /* ── Toast container (injected once) ─────────────────────────────── */
   var toastWrap = document.createElement("div");
   toastWrap.className = "toast-wrap";
   document.body.appendChild(toastWrap);
@@ -1267,13 +1253,6 @@ if (yearEl) {
     return Object.values(cart).filter(function (i) { return i.qty > 0; });
   }
 
-  /* ── DOM refs ─────────────────────────────────────────────────────── */
-  var cartCountEl = document.getElementById("cartCount");
-  var cartBtn     = document.getElementById("cartButton");
-  var cartClose   = document.getElementById("cartClose");
-  var cartBody    = document.getElementById("cartBody");
-  var cartFooter  = document.getElementById("cartFooter");
-
   /* ── Toast ────────────────────────────────────────────────────────── */
   function showToast(msg) {
     var t = document.createElement("div");
@@ -1285,21 +1264,21 @@ if (yearEl) {
 
   /* ── Open / close ─────────────────────────────────────────────────── */
   function openCart() {
-    drawer.classList.add("open");
-    overlay.classList.add("visible");
+    cartDrawer.classList.add("open");
+    cartOverlay.classList.add("visible");
     document.body.style.overflow = "hidden";
-    cartClose && cartClose.focus();
+    cartClose.focus();
   }
 
   function closeCart() {
-    drawer.classList.remove("open");
-    overlay.classList.remove("visible");
+    cartDrawer.classList.remove("open");
+    cartOverlay.classList.remove("visible");
     document.body.style.overflow = "";
   }
 
-  cartBtn  && cartBtn.addEventListener("click", openCart);
-  cartClose && cartClose.addEventListener("click", closeCart);
-  overlay.addEventListener("click", closeCart);
+  cartBtn.addEventListener("click", openCart);
+  cartClose.addEventListener("click", closeCart);
+  cartOverlay.addEventListener("click", closeCart);
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeCart(); });
 
   /* ── Render cart body ─────────────────────────────────────────────── */
@@ -1348,7 +1327,7 @@ if (yearEl) {
     });
   }
 
-  /* ── Public API (used by shop product cards) ──────────────────────── */
+  /* ── Public API used by shop product cards ────────────────────────── */
   window.UOMI_CART = {
     add: function (id, name, price, img, link) {
       if (cart[id]) {

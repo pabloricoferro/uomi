@@ -58,6 +58,21 @@
       </div>
     </footer>
 
+    <!-- Cart overlay + drawer -->
+    <div class="cart-overlay" id="cartOverlay" role="presentation"></div>
+    <aside class="cart-drawer" id="cartDrawer" role="dialog" aria-label="Your selection" aria-modal="true">
+      <div class="cart-drawer-header">
+        <h3>Your Selection</h3>
+        <button class="cart-drawer-close" id="cartClose" aria-label="Close cart">&#x2715;</button>
+      </div>
+      <div class="cart-body" id="cartBody">
+        <p class="cart-empty-msg">Your selection is empty.<br>Add a piece to get started.</p>
+      </div>
+      <div class="cart-drawer-footer" id="cartFooter" hidden>
+        <p class="cart-stripe-note">Each piece is purchased separately via a secure Stripe payment page.</p>
+      </div>
+    </aside>
+
     <script src="products.js"></script>
     <script src="script.js"></script>
   </body>
