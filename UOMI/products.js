@@ -1,57 +1,62 @@
-// ═══════════════════════════════════════════════════════
-// P+3 CERAMICS — PRODUCT CATALOG
-// ═══════════════════════════════════════════════════════
-// Add or edit products below. Each product needs:
-// - id: unique identifier
-// - title: product name
-// - artist: workshop name
-// - type: category (Vessel, Wall Piece, Sculpture, etc.)
-// - priceEUR: price in euros (number, no currency symbol)
-// - image: path to image file (put images in /images/ folder)
-// - alt: description for accessibility
-// - stripeLink: Stripe payment link (get from Stripe Dashboard)
-// - available: true if in stock, false if sold
+// ═══════════════════════════════════════════════════════════════════════════
+// UOMI — PRODUCT CATALOG
+// ═══════════════════════════════════════════════════════════════════════════
+// Each product needs:
+//   id          — unique slug
+//   title       — display name
+//   type        — category label shown on card
+//   description — one-line description
+//   priceEUR    — price as a number (€)
+//   image       — path relative to site root
+//   alt         — image alt text for accessibility
+//   stripeLink  — Stripe Payment Link (get from Stripe Dashboard → Payment Links)
+//   available   — true = in stock, false = sold
 
 window.PRODUCTS = [
   {
-    id: "wall-sequence-01",
-    title: "Tierra Wall Installation",
-    artist: "Colombia Workshop",
-    type: "Wall Piece",
-    priceEUR: 1800,
-    image: "./images/wall-sequence-1.png",
-    alt: "Modular ceramic wall installation in earth tones",
-    stripeLink: "https://buy.stripe.com/test_PLACEHOLDER_1",
-    available: true,
+    id:          "cuenco-luna",
+    title:       "Cuenco Luna",
+    type:        "Bowl",
+    description: "Handmade bowl with a moon-white glaze and lunar crescent mark.",
+    priceEUR:    45,
+    image:       "./images/cuenco-luna.svg",
+    alt:         "Cuenco Luna — handmade ceramic bowl with moon glaze",
+    stripeLink:  "https://buy.stripe.com/test_PLACEHOLDER_CUENCO",
+    available:   true,
   },
   {
-    id: "vessel-01",
-    title: "Rustico Vessel",
-    artist: "Italian Workshop",
-    type: "Vessel",
-    priceEUR: 640,
-    image: "./images/blue-rust-vessel.png",
-    alt: "Hand-thrown ceramic vessel with natural glaze",
-    stripeLink: "https://buy.stripe.com/test_PLACEHOLDER_2",
-    available: true,
+    id:          "jarron-raiz",
+    title:       "Jarrón Raíz",
+    type:        "Vase",
+    description: "Decorative vase with organic root textures pressed into red clay.",
+    priceEUR:    85,
+    image:       "./images/jarron-raiz.svg",
+    alt:         "Jarrón Raíz — decorative ceramic vase with root textures",
+    stripeLink:  "https://buy.stripe.com/test_PLACEHOLDER_JARRON",
+    available:   true,
   },
   {
-    id: "signature-01",
-    title: "Minimal Form Study",
-    artist: "Colombia Workshop",
-    type: "Sculpture",
-    priceEUR: 320,
-    image: "./images/studio-signature.png",
-    alt: "Abstract ceramic sculpture exploring form",
-    stripeLink: "https://buy.stripe.com/test_PLACEHOLDER_3",
-    available: true,
+    id:          "plato-tierra",
+    title:       "Plato Tierra",
+    type:        "Plate",
+    description: "Wheel-thrown plate with concentric earth rings in terracotta.",
+    priceEUR:    32,
+    image:       "./images/plato-tierra.svg",
+    alt:         "Plato Tierra — textured ceramic plate with concentric rings",
+    stripeLink:  "https://buy.stripe.com/test_PLACEHOLDER_PLATO",
+    available:   true,
   },
 ];
 
-// ═══════════════════════════════════════════════════════
-// TO ADD A NEW PRODUCT:
-// 1. Copy one of the blocks above
-// 2. Change all the details
-// 3. Put the product image in the /images/ folder
-// 4. Save this file and refresh the website
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
+// HOW TO ADD A NEW PRODUCT
+// 1. Copy one block above and fill in all fields
+// 2. Add the product image to the /images/ folder
+// 3. Create a Payment Link in Stripe Dashboard → Payment Links
+// 4. Paste the Stripe link into stripeLink
+// 5. Save and push to GitHub
+//
+// HOW TO MARK A PIECE AS SOLD
+//   Change available: true  →  available: false
+//   The card will show "Sold" automatically.
+// ═══════════════════════════════════════════════════════════════════════════

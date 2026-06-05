@@ -4,16 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>UOMI | Shop</title>
-    <meta
-      name="description"
-      content="Shop handcrafted ceramic art pieces from UOMI."
-    />
+    <meta name="description" content="Shop handcrafted ceramic art pieces from UOMI." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="shop-page">
@@ -24,6 +18,23 @@
       </svg>
     </div>
 
+    <!-- Cart overlay + drawer -->
+    <div class="cart-overlay" id="cartOverlay" role="presentation"></div>
+    <aside class="cart-drawer" id="cartDrawer" role="dialog" aria-label="Your selection" aria-modal="true">
+      <div class="cart-drawer-header">
+        <h3>Your Selection</h3>
+        <button class="cart-drawer-close" id="cartClose" aria-label="Close cart">✕</button>
+      </div>
+      <div class="cart-body" id="cartBody">
+        <p class="cart-empty-msg">Your selection is empty.<br>Add a piece to get started.</p>
+      </div>
+      <div class="cart-drawer-footer" id="cartFooter" hidden>
+        <p class="cart-stripe-note">
+          Each piece is purchased separately via a secure Stripe payment page.
+        </p>
+      </div>
+    </aside>
+
     <header class="topbar">
       <div class="container nav">
         <a href="index.html" class="brand">UOMI</a>
@@ -33,8 +44,15 @@
           <a href="about.html">About</a>
           <a href="contact.html">Contact</a>
         </nav>
-        <button class="cart-btn" id="cartButton" aria-label="Shopping cart">
-          <span class="cart-icon" aria-hidden="true">🛒</span>
+        <button class="cart-btn" id="cartButton" aria-label="Open cart">
+          <span class="cart-icon" aria-hidden="true">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+          </span>
           <span class="cart-count" id="cartCount">0</span>
         </button>
       </div>
@@ -43,21 +61,21 @@
     <main>
       <section class="container section" id="shop">
         <div class="section-title-row">
-          <h2>Ceramic Wall Art Gallery</h2>
-          <p>Limited editions</p>
+          <h2>Collection</h2>
+          <p>Three pieces. Each one unrepeatable.</p>
         </div>
-        <div class="shop-empty" id="productGrid">
-          <p>Coming soon. Check back in a few days to see the new pieces.</p>
-        </div>
+        <!-- Products are rendered here by script.js from products.js -->
+        <div id="productGrid"></div>
       </section>
     </main>
 
     <footer class="footer">
       <div class="container">
-        <p>&copy; <span id="year"></span> UOMI. All rights reserved.</p>
+        <p>&copy; <span id="year"></span> UOMI. All rights reserved. &middot; Payments by Stripe.</p>
       </div>
     </footer>
 
+    <script src="products.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

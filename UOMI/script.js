@@ -1,28 +1,4 @@
-const cartCountEl = document.getElementById("cartCount");
 const yearEl = document.getElementById("year");
-const addToCartButtons = document.querySelectorAll(".add-to-cart");
-
-let cartCount = 0;
-
-addToCartButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    if (!cartCountEl) {
-      return;
-    }
-
-    cartCount += 1;
-    cartCountEl.textContent = String(cartCount);
-
-    const originalText = button.textContent;
-    button.textContent = "Added!";
-    button.disabled = true;
-
-    setTimeout(() => {
-      button.textContent = originalText;
-      button.disabled = false;
-    }, 700);
-  });
-});
 
 if (yearEl) {
   yearEl.textContent = String(new Date().getFullYear());
@@ -1234,4 +1210,166 @@ if (yearEl) {
     },
     { passive: true }
   );
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SHOP PAGE — render products + cart drawer
+   Only runs on pages with <body class="shop-page">
+═══════════════════════════════════════════════════════════════════════════ */
+(function shopPage() {
+  if (!document.body.classList.contains("shop-page")) return;
+
+  const grid   = document.getElementById("productGrid");
+  const prods  = window.PRODUCTS;
+  if (!grid || !prods || !prods.length) return;
+
+  /* ── Render product cards ───────────────────────────────────────────── */
+  grid.className = "shop-grid";
+  grid.innerHTML = prods.map(function (p) {
+    const buyBtn = p.available
+      ? '<button class="btn-add-cart" '
+          + 'data-id="'    + p.id          + '" '
+          + 'data-name="'  + p.title       + '" '
+          + 'data-price="' + p.priceEUR    + '" '
+          + 'data-img="'   + p.image       + '" '
+          + 'data-link="'  + p.stripeLink  + '">'
+          + 'Add to cart'
+        + '</button>'
+      : '<span class="sold-label">Sold</span>';
+
+    return '<article class="shop-card" data-product-id="' + p.id + '">'
+      + '<div class="shop-card-img">'
+        + '<img src="' + p.image + '" alt="' + p.alt + '" loading="lazy"/>'
+      + '</div>'
+      + '<div class="shop-card-body">'
+        + '<p class="shop-card-type">' + p.type + '</p>'
+        + '<h3>' + p.title + '</h3>'
+        + '<p class="shop-card-desc">' + p.description + '</p>'
+        + '<div class="shop-card-footer">'
+          + '<span class="shop-card-price">€' + p.priceEUR + '</span>'
+          + buyBtn
+        + '</div>'
+      + '</div>'
+    + '</article>';
+  }).join("");
+
+  /* ── Cart state ────────────────────────────────────────────────────── */
+  var cart        = {};   // { id: { id, name, price, img, link, qty } }
+  var cartCountEl = document.getElementById("cartCount");
+
+  function cartItems() { return Object.values(cart).filter(function (i) { return i.qty > 0; }); }
+
+  /* ── DOM refs ──────────────────────────────────────────────────────── */
+  var cartBtn     = document.getElementById("cartButton");
+  var cartOverlay = document.getElementById("cartOverlay");
+  var cartDrawer  = document.getElementById("cartDrawer");
+  var cartClose   = document.getElementById("cartClose");
+  var cartBody    = document.getElementById("cartBody");
+  var cartFooter  = document.getElementById("cartFooter");
+
+  /* ── Toast ─────────────────────────────────────────────────────────── */
+  var toastWrap = document.createElement("div");
+  toastWrap.className = "toast-wrap";
+  document.body.appendChild(toastWrap);
+
+  function showToast(msg) {
+    var t = document.createElement("div");
+    t.className = "toast";
+    t.textContent = msg;
+    toastWrap.appendChild(t);
+    setTimeout(function () { t.remove(); }, 2800);
+  }
+
+  /* ── Open / close ──────────────────────────────────────────────────── */
+  function openCart() {
+    cartDrawer.classList.add("open");
+    cartOverlay.classList.add("visible");
+    document.body.style.overflow = "hidden";
+    cartClose && cartClose.focus();
+  }
+
+  function closeCart() {
+    cartDrawer.classList.remove("open");
+    cartOverlay.classList.remove("visible");
+    document.body.style.overflow = "";
+  }
+
+  cartBtn     && cartBtn.addEventListener("click", openCart);
+  cartClose   && cartClose.addEventListener("click", closeCart);
+  cartOverlay && cartOverlay.addEventListener("click", closeCart);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeCart(); });
+
+  /* ── Render cart body ──────────────────────────────────────────────── */
+  function renderCart() {
+    var items = cartItems();
+    var count = items.reduce(function (s, i) { return s + i.qty; }, 0);
+
+    if (cartCountEl) cartCountEl.textContent = String(count);
+    if (cartFooter)  cartFooter.hidden = items.length === 0;
+
+    if (!items.length) {
+      cartBody.innerHTML = '<p class="cart-empty-msg">Your selection is empty.<br>Add a piece to get started.</p>';
+      return;
+    }
+
+    cartBody.innerHTML = items.map(function (item) {
+      return '<div class="cart-item" data-id="' + item.id + '">'
+        + '<img class="cart-item-img" src="' + item.img + '" alt="' + item.name + '" loading="lazy"/>'
+        + '<div class="cart-item-info">'
+          + '<p class="cart-item-name">' + item.name + '</p>'
+          + '<p class="cart-item-price">€' + item.price + ' each</p>'
+        + '</div>'
+        + '<div class="cart-qty">'
+          + '<button class="cart-qty-btn" data-action="dec" data-id="' + item.id + '" aria-label="Remove one">−</button>'
+          + '<span class="cart-qty-val">' + item.qty + '</span>'
+          + '<button class="cart-qty-btn" data-action="inc" data-id="' + item.id + '" aria-label="Add one">+</button>'
+        + '</div>'
+        + '<a class="cart-buy-link" href="' + item.link + '" target="_blank" rel="noopener noreferrer">Buy →</a>'
+      + '</div>';
+    }).join("");
+
+    cartBody.querySelectorAll(".cart-qty-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id  = btn.dataset.id;
+        var act = btn.dataset.action;
+        if (!cart[id]) return;
+        if (act === "inc") {
+          cart[id].qty += 1;
+        } else {
+          cart[id].qty -= 1;
+          if (cart[id].qty <= 0) delete cart[id];
+        }
+        renderCart();
+      });
+    });
+  }
+
+  /* ── Add to cart ────────────────────────────────────────────────────── */
+  grid.querySelectorAll(".btn-add-cart").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var id    = btn.dataset.id;
+      var name  = btn.dataset.name;
+      var price = btn.dataset.price;
+      var img   = btn.dataset.img;
+      var link  = btn.dataset.link;
+
+      if (cart[id]) {
+        cart[id].qty += 1;
+      } else {
+        cart[id] = { id: id, name: name, price: price, img: img, link: link, qty: 1 };
+      }
+
+      renderCart();
+      showToast(name + " added");
+
+      btn.textContent = "✓ Added";
+      btn.classList.add("added");
+      setTimeout(function () {
+        btn.textContent = "Add to cart";
+        btn.classList.remove("added");
+      }, 1400);
+    });
+  });
+
+  renderCart();
 })();
