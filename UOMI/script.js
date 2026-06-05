@@ -1214,134 +1214,174 @@ if (yearEl) {
 
 /* ═══════════════════════════════════════════════════════════════════════════
    GLOBAL CART — runs on every page
-   Drawer HTML lives in each page's HTML. This block only manages state,
-   events, and localStorage persistence.
+   Uses event delegation (no stored element references) so clicks always work
+   regardless of rendering order. Re-reads localStorage on every open so the
+   cart is always fresh when navigating between pages.
 ═══════════════════════════════════════════════════════════════════════════ */
 (function globalCart() {
-  /* ── Required DOM elements (present in every page's HTML) ────────── */
-  var cartBtn     = document.getElementById("cartButton");
-  var cartOverlay = document.getElementById("cartOverlay");
-  var cartDrawer  = document.getElementById("cartDrawer");
-  var cartClose   = document.getElementById("cartClose");
-  var cartBody    = document.getElementById("cartBody");
-  var cartFooter  = document.getElementById("cartFooter");
-  var cartCountEl = document.getElementById("cartCount");
 
-  if (!cartBtn || !cartDrawer) return; // page not set up yet — bail safely
+  var KEY = "uomi-cart-v1";
 
-  /* ── Toast container (injected once) ─────────────────────────────── */
+  /* ── localStorage helpers ─────────────────────────────────────────── */
+  function load() {
+    try {
+      var s = localStorage.getItem(KEY);
+      return s ? JSON.parse(s) : {};
+    } catch (e) { return {}; }
+  }
+
+  function save(cart) {
+    try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch (e) {}
+  }
+
+  /* ── Toast ────────────────────────────────────────────────────────── */
   var toastWrap = document.createElement("div");
   toastWrap.className = "toast-wrap";
   document.body.appendChild(toastWrap);
 
-  /* ── Cart state (localStorage) ────────────────────────────────────── */
-  var STORAGE_KEY = "uomi-cart-v1";
-
-  function loadCart() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
-    catch (e) { return {}; }
-  }
-
-  function saveCart() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(cart)); }
-    catch (e) {}
-  }
-
-  var cart = loadCart();
-
-  function cartItems() {
-    return Object.values(cart).filter(function (i) { return i.qty > 0; });
-  }
-
-  /* ── Toast ────────────────────────────────────────────────────────── */
-  function showToast(msg) {
+  function toast(msg) {
     var t = document.createElement("div");
     t.className = "toast";
     t.textContent = msg;
     toastWrap.appendChild(t);
-    setTimeout(function () { t.remove(); }, 2800);
+    setTimeout(function () { t.remove(); }, 2600);
+  }
+
+  /* ── Update count badge ───────────────────────────────────────────── */
+  function updateBadge() {
+    var cart  = load();
+    var count = 0;
+    Object.values(cart).forEach(function (i) { if (i.qty > 0) count += i.qty; });
+    var el = document.getElementById("cartCount");
+    if (el) el.textContent = String(count);
   }
 
   /* ── Open / close ─────────────────────────────────────────────────── */
   function openCart() {
-    cartDrawer.classList.add("open");
-    cartOverlay.classList.add("visible");
+    var drawer  = document.getElementById("cartDrawer");
+    var overlay = document.getElementById("cartOverlay");
+    if (!drawer) return;
+    drawer.classList.add("open");
+    if (overlay) overlay.classList.add("visible");
     document.body.style.overflow = "hidden";
-    cartClose.focus();
+    renderDrawer();
   }
 
   function closeCart() {
-    cartDrawer.classList.remove("open");
-    cartOverlay.classList.remove("visible");
+    var drawer  = document.getElementById("cartDrawer");
+    var overlay = document.getElementById("cartOverlay");
+    if (!drawer) return;
+    drawer.classList.remove("open");
+    if (overlay) overlay.classList.remove("visible");
     document.body.style.overflow = "";
   }
 
-  cartBtn.addEventListener("click", openCart);
-  cartClose.addEventListener("click", closeCart);
-  cartOverlay.addEventListener("click", closeCart);
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeCart(); });
+  /* ── Render drawer contents (always reads fresh from localStorage) ── */
+  function renderDrawer() {
+    var cart    = load();
+    var items   = Object.values(cart).filter(function (i) { return i.qty > 0; });
+    var body    = document.getElementById("cartBody");
+    var footer  = document.getElementById("cartFooter");
+    if (!body) return;
 
-  /* ── Render cart body ─────────────────────────────────────────────── */
-  function renderCart() {
-    var items = cartItems();
-    var count = items.reduce(function (s, i) { return s + i.qty; }, 0);
-
-    if (cartCountEl) cartCountEl.textContent = String(count);
-    if (cartFooter)  cartFooter.hidden = items.length === 0;
+    if (footer) footer.hidden = items.length === 0;
 
     if (!items.length) {
-      cartBody.innerHTML = '<p class="cart-empty-msg">Your selection is empty.<br>Add a piece to get started.</p>';
+      body.innerHTML = '<p class="cart-empty-msg">Your selection is empty.<br>Add a piece to get started.</p>';
       return;
     }
 
-    cartBody.innerHTML = items.map(function (item) {
-      return '<div class="cart-item" data-id="' + item.id + '">'
+    body.innerHTML = items.map(function (item) {
+      return '<div class="cart-item">'
         + '<img class="cart-item-img" src="' + item.img + '" alt="' + item.name + '" loading="lazy"/>'
         + '<div class="cart-item-info">'
           + '<p class="cart-item-name">' + item.name + '</p>'
           + '<p class="cart-item-price">\u20ac' + item.price + ' each</p>'
         + '</div>'
         + '<div class="cart-qty">'
-          + '<button class="cart-qty-btn" data-action="dec" data-id="' + item.id + '" aria-label="Remove one">\u2212</button>'
+          + '<button type="button" class="cart-qty-btn" data-id="' + item.id + '" data-action="dec" aria-label="Remove one">\u2212</button>'
           + '<span class="cart-qty-val">' + item.qty + '</span>'
-          + '<button class="cart-qty-btn" data-action="inc" data-id="' + item.id + '" aria-label="Add one">+</button>'
+          + '<button type="button" class="cart-qty-btn" data-id="' + item.id + '" data-action="inc" aria-label="Add one">+</button>'
         + '</div>'
         + '<a class="cart-buy-link" href="' + item.link + '" target="_blank" rel="noopener noreferrer">Buy \u2192</a>'
       + '</div>';
     }).join("");
-
-    cartBody.querySelectorAll(".cart-qty-btn").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        var id  = btn.dataset.id;
-        var act = btn.dataset.action;
-        if (!cart[id]) return;
-        if (act === "inc") {
-          cart[id].qty += 1;
-        } else {
-          cart[id].qty -= 1;
-          if (cart[id].qty <= 0) delete cart[id];
-        }
-        saveCart();
-        renderCart();
-      });
-    });
   }
 
-  /* ── Public API used by shop product cards ────────────────────────── */
+  /* ── Event delegation — handles ALL cart clicks ───────────────────── */
+  document.addEventListener("click", function (e) {
+    var t = e.target;
+
+    /* Open cart */
+    if (t.closest("#cartButton")) {
+      openCart();
+      return;
+    }
+
+    /* Close — X button */
+    if (t.closest("#cartClose")) {
+      closeCart();
+      return;
+    }
+
+    /* Close — overlay backdrop */
+    if (t.id === "cartOverlay") {
+      closeCart();
+      return;
+    }
+
+    /* Qty +/- buttons (rendered inside cartBody) */
+    var qBtn = t.closest(".cart-qty-btn");
+    if (qBtn) {
+      var id  = qBtn.getAttribute("data-id");
+      var act = qBtn.getAttribute("data-action");
+      var cart = load();
+      if (!cart[id]) return;
+      if (act === "inc") {
+        cart[id].qty += 1;
+      } else {
+        cart[id].qty -= 1;
+        if (cart[id].qty <= 0) delete cart[id];
+      }
+      save(cart);
+      updateBadge();
+      renderDrawer();
+    }
+  });
+
+  /* Keyboard close */
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closeCart();
+  });
+
+  /* ── Public API: called by shop product cards ─────────────────────── */
   window.UOMI_CART = {
     add: function (id, name, price, img, link) {
+      var cart = load();
       if (cart[id]) {
         cart[id].qty += 1;
       } else {
         cart[id] = { id: id, name: name, price: String(price), img: img, link: link, qty: 1 };
       }
-      saveCart();
-      renderCart();
-      showToast(name + " added");
+      save(cart);
+      updateBadge();
+      toast(name + " added");
     },
   };
 
-  renderCart();
+  /* Sync badge when another tab updates the cart */
+  window.addEventListener("storage", function (e) {
+    if (e.key === KEY) {
+      updateBadge();
+      /* If drawer is open, refresh it too */
+      var drawer = document.getElementById("cartDrawer");
+      if (drawer && drawer.classList.contains("open")) renderDrawer();
+    }
+  });
+
+  /* ── Init: show correct badge on page load ────────────────────────── */
+  updateBadge();
+
 })();
 
 /* ═══════════════════════════════════════════════════════════════════════════
