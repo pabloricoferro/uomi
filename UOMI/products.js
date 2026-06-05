@@ -21,7 +21,7 @@ window.PRODUCTS = [
     priceEUR:    45,
     image:       "./images/cuenco-luna.svg",
     alt:         "Cuenco Luna — handmade ceramic bowl with moon glaze",
-    stripeLink:  "https://buy.stripe.com/test_PLACEHOLDER_CUENCO",
+    stripeLink:  "https://buy.stripe.com/test_7sYeVfdqu60BfJ85D3fw400",
     available:   true,
   },
   {
@@ -32,7 +32,7 @@ window.PRODUCTS = [
     priceEUR:    85,
     image:       "./images/jarron-raiz.svg",
     alt:         "Jarrón Raíz — decorative ceramic vase with root textures",
-    stripeLink:  "https://buy.stripe.com/test_PLACEHOLDER_JARRON",
+    stripeLink:  "https://buy.stripe.com/test_5kQ14p2LQ3St9kK7Lbfw401",
     available:   true,
   },
   {
@@ -43,7 +43,7 @@ window.PRODUCTS = [
     priceEUR:    32,
     image:       "./images/plato-tierra.svg",
     alt:         "Plato Tierra — textured ceramic plate with concentric rings",
-    stripeLink:  "https://buy.stripe.com/test_PLACEHOLDER_PLATO",
+    stripeLink:  "https://buy.stripe.com/test_8x2aEZcmqbkV68yfdDfw402",
     available:   true,
   },
 ];
