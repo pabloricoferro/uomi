@@ -702,48 +702,6 @@ h1 {
   letter-spacing: -0.02em;
 }
 
-.qty-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.qty-ctrl {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 4px 8px;
-}
-
-.qty-btn {
-  width: 22px;
-  height: 22px;
-  border: none;
-  background: transparent;
-  font-size: 1rem;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text);
-  border-radius: 50%;
-  transition: background 0.15s;
-  padding: 0;
-}
-
-.qty-btn:hover {
-  background: #f0f0f0;
-}
-
-.qty-val {
-  font-size: 0.88rem;
-  font-weight: 700;
-  min-width: 16px;
-  text-align: center;
-}
 
 .btn-buy-now {
   display: inline-flex;

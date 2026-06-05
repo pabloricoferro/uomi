@@ -1224,28 +1224,11 @@ if (yearEl) {
   var prods = window.PRODUCTS;
   if (!grid || !prods || !prods.length) return;
 
-  /* qty state keyed by product id */
-  var qty = {};
-  prods.forEach(function (p) { qty[p.id] = 1; });
-
   grid.className = "shop-grid";
   grid.innerHTML = prods.map(function (p) {
-    if (!p.available) {
-      return '<article class="shop-card">'
-        + '<div class="shop-card-img">'
-          + '<img src="' + p.image + '" alt="' + p.alt + '" loading="lazy"/>'
-        + '</div>'
-        + '<div class="shop-card-body">'
-          + '<p class="shop-card-type">' + p.type + '</p>'
-          + '<h3>' + p.title + '</h3>'
-          + '<p class="shop-card-desc">' + p.description + '</p>'
-          + '<div class="shop-card-footer">'
-            + '<span class="shop-card-price">\u20ac' + p.priceEUR + '</span>'
-            + '<span class="sold-label">Sold</span>'
-          + '</div>'
-        + '</div>'
-      + '</article>';
-    }
+    var buyBtn = p.available
+      ? '<a class="btn-buy-now" href="' + p.stripeLink + '" target="_blank" rel="noopener noreferrer">Buy Now</a>'
+      : '<span class="sold-label">Sold</span>';
 
     return '<article class="shop-card">'
       + '<div class="shop-card-img">'
@@ -1257,30 +1240,9 @@ if (yearEl) {
         + '<p class="shop-card-desc">' + p.description + '</p>'
         + '<div class="shop-card-footer">'
           + '<span class="shop-card-price">\u20ac' + p.priceEUR + '</span>'
-          + '<div class="qty-row">'
-            + '<div class="qty-ctrl">'
-              + '<button type="button" class="qty-btn" data-id="' + p.id + '" data-dir="-1" aria-label="Remove one">\u2212</button>'
-              + '<span class="qty-val" id="qty-' + p.id + '">1</span>'
-              + '<button type="button" class="qty-btn" data-id="' + p.id + '" data-dir="1" aria-label="Add one">+</button>'
-            + '</div>'
-            + '<a class="btn-buy-now" id="buy-' + p.id + '" href="' + p.stripeLink + '?prefilled_quantity=1" target="_blank" rel="noopener noreferrer">Buy Now</a>'
-          + '</div>'
+          + buyBtn
         + '</div>'
       + '</div>'
     + '</article>';
   }).join("");
-
-  /* update qty display + Buy Now href on +/- click */
-  grid.addEventListener("click", function (e) {
-    var btn = e.target.closest(".qty-btn");
-    if (!btn) return;
-    var id  = btn.getAttribute("data-id");
-    var dir = parseInt(btn.getAttribute("data-dir"), 10);
-    qty[id] = Math.max(1, Math.min(10, qty[id] + dir));
-    var valEl  = document.getElementById("qty-" + id);
-    var buyEl  = document.getElementById("buy-" + id);
-    var prod   = prods.find(function (p) { return p.id === id; });
-    if (valEl) valEl.textContent = qty[id];
-    if (buyEl && prod) buyEl.href = prod.stripeLink + "?prefilled_quantity=" + qty[id];
-  });
 })();
