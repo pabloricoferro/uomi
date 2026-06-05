@@ -1213,65 +1213,68 @@ if (yearEl) {
 })();
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   SHOP PAGE — render products + cart drawer
-   Only runs on pages with <body class="shop-page">
+   GLOBAL CART — runs on every page
+   Injects drawer HTML, persists state in localStorage.
 ═══════════════════════════════════════════════════════════════════════════ */
-(function shopPage() {
-  if (!document.body.classList.contains("shop-page")) return;
+(function globalCart() {
+  /* ── Inject overlay + drawer ──────────────────────────────────────── */
+  var overlay = document.createElement("div");
+  overlay.id = "cartOverlay";
+  overlay.className = "cart-overlay";
+  overlay.setAttribute("role", "presentation");
+  document.body.appendChild(overlay);
 
-  const grid   = document.getElementById("productGrid");
-  const prods  = window.PRODUCTS;
-  if (!grid || !prods || !prods.length) return;
+  var drawer = document.createElement("aside");
+  drawer.id = "cartDrawer";
+  drawer.className = "cart-drawer";
+  drawer.setAttribute("role", "dialog");
+  drawer.setAttribute("aria-label", "Your selection");
+  drawer.setAttribute("aria-modal", "true");
+  drawer.innerHTML =
+    '<div class="cart-drawer-header">'
+      + '<h3>Your Selection</h3>'
+      + '<button class="cart-drawer-close" id="cartClose" aria-label="Close cart">\u2715</button>'
+    + '</div>'
+    + '<div class="cart-body" id="cartBody">'
+      + '<p class="cart-empty-msg">Your selection is empty.<br>Add a piece to get started.</p>'
+    + '</div>'
+    + '<div class="cart-drawer-footer" id="cartFooter" hidden>'
+      + '<p class="cart-stripe-note">Each piece is purchased separately via a secure Stripe payment page.</p>'
+    + '</div>';
+  document.body.appendChild(drawer);
 
-  /* ── Render product cards ───────────────────────────────────────────── */
-  grid.className = "shop-grid";
-  grid.innerHTML = prods.map(function (p) {
-    const buyBtn = p.available
-      ? '<button class="btn-add-cart" '
-          + 'data-id="'    + p.id          + '" '
-          + 'data-name="'  + p.title       + '" '
-          + 'data-price="' + p.priceEUR    + '" '
-          + 'data-img="'   + p.image       + '" '
-          + 'data-link="'  + p.stripeLink  + '">'
-          + 'Add to cart'
-        + '</button>'
-      : '<span class="sold-label">Sold</span>';
-
-    return '<article class="shop-card" data-product-id="' + p.id + '">'
-      + '<div class="shop-card-img">'
-        + '<img src="' + p.image + '" alt="' + p.alt + '" loading="lazy"/>'
-      + '</div>'
-      + '<div class="shop-card-body">'
-        + '<p class="shop-card-type">' + p.type + '</p>'
-        + '<h3>' + p.title + '</h3>'
-        + '<p class="shop-card-desc">' + p.description + '</p>'
-        + '<div class="shop-card-footer">'
-          + '<span class="shop-card-price">€' + p.priceEUR + '</span>'
-          + buyBtn
-        + '</div>'
-      + '</div>'
-    + '</article>';
-  }).join("");
-
-  /* ── Cart state ────────────────────────────────────────────────────── */
-  var cart        = {};   // { id: { id, name, price, img, link, qty } }
-  var cartCountEl = document.getElementById("cartCount");
-
-  function cartItems() { return Object.values(cart).filter(function (i) { return i.qty > 0; }); }
-
-  /* ── DOM refs ──────────────────────────────────────────────────────── */
-  var cartBtn     = document.getElementById("cartButton");
-  var cartOverlay = document.getElementById("cartOverlay");
-  var cartDrawer  = document.getElementById("cartDrawer");
-  var cartClose   = document.getElementById("cartClose");
-  var cartBody    = document.getElementById("cartBody");
-  var cartFooter  = document.getElementById("cartFooter");
-
-  /* ── Toast ─────────────────────────────────────────────────────────── */
+  /* ── Toast container ──────────────────────────────────────────────── */
   var toastWrap = document.createElement("div");
   toastWrap.className = "toast-wrap";
   document.body.appendChild(toastWrap);
 
+  /* ── Cart state (localStorage) ────────────────────────────────────── */
+  var STORAGE_KEY = "uomi-cart-v1";
+
+  function loadCart() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
+    catch (e) { return {}; }
+  }
+
+  function saveCart() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(cart)); }
+    catch (e) {}
+  }
+
+  var cart = loadCart();
+
+  function cartItems() {
+    return Object.values(cart).filter(function (i) { return i.qty > 0; });
+  }
+
+  /* ── DOM refs ─────────────────────────────────────────────────────── */
+  var cartCountEl = document.getElementById("cartCount");
+  var cartBtn     = document.getElementById("cartButton");
+  var cartClose   = document.getElementById("cartClose");
+  var cartBody    = document.getElementById("cartBody");
+  var cartFooter  = document.getElementById("cartFooter");
+
+  /* ── Toast ────────────────────────────────────────────────────────── */
   function showToast(msg) {
     var t = document.createElement("div");
     t.className = "toast";
@@ -1280,26 +1283,26 @@ if (yearEl) {
     setTimeout(function () { t.remove(); }, 2800);
   }
 
-  /* ── Open / close ──────────────────────────────────────────────────── */
+  /* ── Open / close ─────────────────────────────────────────────────── */
   function openCart() {
-    cartDrawer.classList.add("open");
-    cartOverlay.classList.add("visible");
+    drawer.classList.add("open");
+    overlay.classList.add("visible");
     document.body.style.overflow = "hidden";
     cartClose && cartClose.focus();
   }
 
   function closeCart() {
-    cartDrawer.classList.remove("open");
-    cartOverlay.classList.remove("visible");
+    drawer.classList.remove("open");
+    overlay.classList.remove("visible");
     document.body.style.overflow = "";
   }
 
-  cartBtn     && cartBtn.addEventListener("click", openCart);
-  cartClose   && cartClose.addEventListener("click", closeCart);
-  cartOverlay && cartOverlay.addEventListener("click", closeCart);
+  cartBtn  && cartBtn.addEventListener("click", openCart);
+  cartClose && cartClose.addEventListener("click", closeCart);
+  overlay.addEventListener("click", closeCart);
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeCart(); });
 
-  /* ── Render cart body ──────────────────────────────────────────────── */
+  /* ── Render cart body ─────────────────────────────────────────────── */
   function renderCart() {
     var items = cartItems();
     var count = items.reduce(function (s, i) { return s + i.qty; }, 0);
@@ -1317,14 +1320,14 @@ if (yearEl) {
         + '<img class="cart-item-img" src="' + item.img + '" alt="' + item.name + '" loading="lazy"/>'
         + '<div class="cart-item-info">'
           + '<p class="cart-item-name">' + item.name + '</p>'
-          + '<p class="cart-item-price">€' + item.price + ' each</p>'
+          + '<p class="cart-item-price">\u20ac' + item.price + ' each</p>'
         + '</div>'
         + '<div class="cart-qty">'
-          + '<button class="cart-qty-btn" data-action="dec" data-id="' + item.id + '" aria-label="Remove one">−</button>'
+          + '<button class="cart-qty-btn" data-action="dec" data-id="' + item.id + '" aria-label="Remove one">\u2212</button>'
           + '<span class="cart-qty-val">' + item.qty + '</span>'
           + '<button class="cart-qty-btn" data-action="inc" data-id="' + item.id + '" aria-label="Add one">+</button>'
         + '</div>'
-        + '<a class="cart-buy-link" href="' + item.link + '" target="_blank" rel="noopener noreferrer">Buy →</a>'
+        + '<a class="cart-buy-link" href="' + item.link + '" target="_blank" rel="noopener noreferrer">Buy \u2192</a>'
       + '</div>';
     }).join("");
 
@@ -1339,30 +1342,79 @@ if (yearEl) {
           cart[id].qty -= 1;
           if (cart[id].qty <= 0) delete cart[id];
         }
+        saveCart();
         renderCart();
       });
     });
   }
 
-  /* ── Add to cart ────────────────────────────────────────────────────── */
-  grid.querySelectorAll(".btn-add-cart").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      var id    = btn.dataset.id;
-      var name  = btn.dataset.name;
-      var price = btn.dataset.price;
-      var img   = btn.dataset.img;
-      var link  = btn.dataset.link;
-
+  /* ── Public API (used by shop product cards) ──────────────────────── */
+  window.UOMI_CART = {
+    add: function (id, name, price, img, link) {
       if (cart[id]) {
         cart[id].qty += 1;
       } else {
-        cart[id] = { id: id, name: name, price: price, img: img, link: link, qty: 1 };
+        cart[id] = { id: id, name: name, price: String(price), img: img, link: link, qty: 1 };
       }
-
+      saveCart();
       renderCart();
       showToast(name + " added");
+    },
+  };
 
-      btn.textContent = "✓ Added";
+  renderCart();
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SHOP PAGE — render product cards
+   Only runs on pages with <body class="shop-page">
+═══════════════════════════════════════════════════════════════════════════ */
+(function shopPage() {
+  if (!document.body.classList.contains("shop-page")) return;
+
+  var grid  = document.getElementById("productGrid");
+  var prods = window.PRODUCTS;
+  if (!grid || !prods || !prods.length) return;
+
+  grid.className = "shop-grid";
+  grid.innerHTML = prods.map(function (p) {
+    var buyBtn = p.available
+      ? '<button class="btn-add-cart"'
+          + ' data-id="'    + p.id         + '"'
+          + ' data-name="'  + p.title      + '"'
+          + ' data-price="' + p.priceEUR   + '"'
+          + ' data-img="'   + p.image      + '"'
+          + ' data-link="'  + p.stripeLink + '">'
+          + 'Add to cart'
+        + '</button>'
+      : '<span class="sold-label">Sold</span>';
+
+    return '<article class="shop-card">'
+      + '<div class="shop-card-img">'
+        + '<img src="' + p.image + '" alt="' + p.alt + '" loading="lazy"/>'
+      + '</div>'
+      + '<div class="shop-card-body">'
+        + '<p class="shop-card-type">' + p.type + '</p>'
+        + '<h3>' + p.title + '</h3>'
+        + '<p class="shop-card-desc">' + p.description + '</p>'
+        + '<div class="shop-card-footer">'
+          + '<span class="shop-card-price">\u20ac' + p.priceEUR + '</span>'
+          + buyBtn
+        + '</div>'
+      + '</div>'
+    + '</article>';
+  }).join("");
+
+  grid.querySelectorAll(".btn-add-cart").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      window.UOMI_CART.add(
+        btn.dataset.id,
+        btn.dataset.name,
+        btn.dataset.price,
+        btn.dataset.img,
+        btn.dataset.link
+      );
+      btn.textContent = "\u2713 Added";
       btn.classList.add("added");
       setTimeout(function () {
         btn.textContent = "Add to cart";
@@ -1370,6 +1422,4 @@ if (yearEl) {
       }, 1400);
     });
   });
-
-  renderCart();
 })();
