@@ -1150,8 +1150,13 @@ if (yearEl) {
     };
 
     if (!reduced) {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(runCycle);
+      // Wait for web fonts before measuring the O's bounding rect.
+      // On first load the fallback font gives wrong dimensions; fonts.ready
+      // guarantees the correct layout before we compute m.left.
+      document.fonts.ready.then(() => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(runCycle);
+        });
       });
       window.addEventListener("resize", onResize, { passive: true });
       document.addEventListener("visibilitychange", onVisibility);
