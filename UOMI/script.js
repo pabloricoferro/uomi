@@ -1236,11 +1236,24 @@ if (yearEl) {
   var DISMISS_DAYS = 7;    // days to wait before re-showing after "No thanks"
 
   /* ── localStorage keys ─────────────────────────────────────────────── */
-  var LS_SUBSCRIBED = 'uomi-nl-subscribed';
-  var LS_DISMISSED  = 'uomi-nl-dismissed';
+  var LS_EMAILS    = 'uomi-nl-emails';   // JSON array of subscribed emails
+  var LS_DISMISSED = 'uomi-nl-dismissed';
 
-  /* ── Guard: already subscribed? ────────────────────────────────────── */
-  if (localStorage.getItem(LS_SUBSCRIBED) === '1') return;
+  function getSubscribedEmails() {
+    try { return JSON.parse(localStorage.getItem(LS_EMAILS) || '[]'); }
+    catch (err) { return []; }
+  }
+
+  function isEmailSubscribed(email) {
+    return getSubscribedEmails().indexOf(email.toLowerCase()) !== -1;
+  }
+
+  function markEmailSubscribed(email) {
+    var list = getSubscribedEmails();
+    email = email.toLowerCase();
+    if (list.indexOf(email) === -1) list.push(email);
+    localStorage.setItem(LS_EMAILS, JSON.stringify(list));
+  }
 
   /* ── Guard: dismissed recently? ────────────────────────────────────── */
   var dismissedAt = parseInt(localStorage.getItem(LS_DISMISSED) || '0', 10);
@@ -1419,6 +1432,44 @@ if (yearEl) {
     statusEl.className = cls || '';
   }
 
+  /* ── Submit via GET form → hidden iframe (same as browser URL test) ── */
+  function submitViaGetForm(fields, onDone) {
+    var frameName = 'nl_frame_' + Date.now();
+    var iframe = document.createElement('iframe');
+    iframe.name = frameName;
+    iframe.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden';
+    document.body.appendChild(iframe);
+
+    var form = document.createElement('form');
+    form.method = 'GET';
+    form.action = SCRIPT_URL;
+    form.target = frameName;
+
+    Object.keys(fields).forEach(function(key) {
+      var input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = fields[key];
+      form.appendChild(input);
+    });
+
+    var done = false;
+    function finish() {
+      if (done) return;
+      done = true;
+      if (form.parentNode) form.parentNode.removeChild(form);
+      window.setTimeout(function() {
+        if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+      }, 2000);
+      onDone();
+    }
+
+    iframe.onload = finish;
+    document.body.appendChild(form);
+    form.submit();
+    window.setTimeout(finish, 4000);
+  }
+
   /* ── Form submit ────────────────────────────────────────────────────── */
   function onSubmit(e) {
     e.preventDefault();
@@ -1455,8 +1506,8 @@ if (yearEl) {
       return;
     }
 
-    /* ── Already subscribed from this browser ────────────────────────── */
-    if (localStorage.getItem(LS_SUBSCRIBED) === '1') {
+    /* ── Already subscribed from this browser (same email) ───────────── */
+    if (isEmailSubscribed(email)) {
       setStatus('This email is already subscribed.', 'nl-info');
       window.setTimeout(function() { dismiss(false); }, 2500);
       return;
@@ -1469,27 +1520,26 @@ if (yearEl) {
     /* ── No endpoint configured ──────────────────────────────────────── */
     if (!SCRIPT_URL) {
       console.warn('[UOMI Newsletter] SCRIPT_URL is not set. See NEWSLETTER_SETUP.md.');
-      localStorage.setItem(LS_SUBSCRIBED, '1');
+      markEmailSubscribed(email);
       setStatus('Subscribed! (demo mode)', 'nl-success');
       window.setTimeout(function() { dismiss(true); }, 2000);
       return;
     }
 
-    /* ── Send to Google Apps Script via img pixel (GET) ─────────────── */
-    /* Image requests always follow cross-origin redirects with no CORS  */
-    /* restrictions — the same technique used by analytics pixels.       */
-    var qs = 'email='   + encodeURIComponent(email)
-           + '&name='    + encodeURIComponent(name)
-           + '&country=' + encodeURIComponent(country)
-           + '&dob='     + encodeURIComponent(dob)
-           + '&sex='     + encodeURIComponent(sex)
-           + '&t='       + Date.now();
-
-    new Image().src = SCRIPT_URL + '?' + qs;
-
-    localStorage.setItem(LS_SUBSCRIBED, '1');
-    setStatus('Thank you for subscribing!', 'nl-success');
-    window.setTimeout(function() { dismiss(true); }, 2000);
+    /* ── GET form in hidden iframe — mirrors the working browser test ── */
+    submitViaGetForm({
+      email:   email,
+      name:    name,
+      country: country,
+      sex:     sex,
+      age:     dob,
+    }, function() {
+      markEmailSubscribed(email);
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Subscribe';
+      setStatus('Thank you for subscribing!', 'nl-success');
+      window.setTimeout(function() { dismiss(true); }, 2000);
+    });
   }
 
   /* ── Kick off ───────────────────────────────────────────────────────── */

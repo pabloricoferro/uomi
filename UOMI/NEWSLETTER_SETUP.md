@@ -10,9 +10,12 @@ The newsletter popup is fully built. It shows on every page 2.5 seconds after lo
 2. Name it **UOMI Newsletter**.
 3. In row 1, add these headers:
 
-| A | B | C | D | E | F | G |
-|---|---|---|---|---|---|---|
-| Email | Name | Country | Date of Birth | Sex | Subscribed At | Page |
+| A | B | C | D | E |
+|---|---|---|---|---|
+| Email | Name | Country | Sex | Age |
+
+(`Age` stores the date of birth from the form.)
+
 
 Leave all other rows empty — the script will fill them automatically.
 
@@ -28,10 +31,14 @@ var SPREADSHEET_ID = '1kijPBOhZoxQ-u-Dl1rNa6X-_GuTmvZrLR5eOavtk2sY';
 
 function doPost(e) {
   try {
-    var email   = (e.parameter.email   || '').toLowerCase().trim();
-    var name    = (e.parameter.name    || '').trim();
-    var country = (e.parameter.country || '').trim();
-    var sex     = (e.parameter.sex     || '').trim();
+    e = e || {};
+    var p = e.parameter || {};
+
+    var email   = (p.email   || '').toLowerCase().trim();
+    var name    = (p.name    || '').trim();
+    var country = (p.country || '').trim();
+    var sex     = (p.sex     || '').trim();
+    var age     = (p.age     || p.dob || '').trim();
 
     Logger.log('Received: ' + email);
     if (!email) return ok();
@@ -49,7 +56,8 @@ function doPost(e) {
       }
     }
 
-    sheet.appendRow([email, name, country, sex, new Date()]);
+    // Columns: Email | Name | Country | Sex | Age (date of birth)
+    sheet.appendRow([email, name, country, sex, age]);
     Logger.log('Saved: ' + email);
     return ok();
 
@@ -69,10 +77,10 @@ function ok() {
     .setMimeType(ContentService.MimeType.TEXT);
 }
 
-// ── Run this manually from the editor to test that the sheet is writable ──
+// Run THIS from the editor (not doGet): select testWrite → Run
 function testWrite() {
   var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getActiveSheet();
-  sheet.appendRow(['test@uomi.art', 'Test User', 'Spain', 'Male', new Date()]);
+  sheet.appendRow(['test@uomi.art', 'Test User', 'Spain', 'Male', '1990-01-01']);
   Logger.log('testWrite OK — check the sheet for a new row.');
 }
 ```
@@ -112,6 +120,29 @@ var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycb.../exec';
 ```
 
 Save, commit, and push to GitHub. Done — the popup will now write every new email to your Google Sheet.
+
+---
+
+## Troubleshooting
+
+### Error: `Cannot read properties of undefined (reading 'parameter')`
+
+You ran **`doGet`** from the editor (Run button). That function expects a web request with URL parameters — when run manually, `e` is undefined.
+
+**Fix:** In the function dropdown at the top, select **`testWrite`** (not `doGet`) and click Run. You should see `testWrite OK` in the log and a new row in the sheet.
+
+### Data not appearing after form submit
+
+1. **Redeploy after every code change:** Deploy → Manage deployments → Edit (pencil) → Version: **New version** → Deploy. Saving alone does not update the live URL.
+2. **Test the URL in the browser** (replace with your deployment URL):
+
+```
+https://script.google.com/macros/s/YOUR_ID/exec?email=test@uomi.art&name=Test&country=Spain&sex=Male
+```
+
+You should see `ok` on the page and a new row in the sheet.
+
+3. Check **Executions** in the left sidebar of Apps Script for errors.
 
 ---
 
