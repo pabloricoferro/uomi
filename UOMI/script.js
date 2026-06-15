@@ -1419,30 +1419,6 @@ if (yearEl) {
     statusEl.className = cls || '';
   }
 
-  /* ── JSONP helper (avoids CORS with Google Apps Script) ─────────────── */
-  function jsonpCall(url, params, callback) {
-    var cbName = '_nlcb' + Date.now();
-    var script = document.createElement('script');
-    var qs = Object.keys(params).map(function(k) {
-      return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
-    }).join('&');
-
-    window[cbName] = function(data) {
-      delete window[cbName];
-      if (script.parentNode) script.parentNode.removeChild(script);
-      callback(null, data);
-    };
-
-    script.onerror = function() {
-      delete window[cbName];
-      if (script.parentNode) script.parentNode.removeChild(script);
-      callback(new Error('Network error'));
-    };
-
-    script.src = url + (url.indexOf('?') === -1 ? '?' : '&') + qs + '&callback=' + cbName;
-    document.head.appendChild(script);
-  }
-
   /* ── Form submit ────────────────────────────────────────────────────── */
   function onSubmit(e) {
     e.preventDefault();
@@ -1479,56 +1455,44 @@ if (yearEl) {
       return;
     }
 
+    /* ── Already subscribed from this browser ────────────────────────── */
+    if (localStorage.getItem(LS_SUBSCRIBED) === '1') {
+      setStatus('This email is already subscribed.', 'nl-info');
+      window.setTimeout(function() { dismiss(false); }, 2500);
+      return;
+    }
+
     submitBtn.disabled = true;
     submitBtn.textContent = 'Subscribing\u2026';
     setStatus('');
 
-    /* ── No endpoint configured yet ──────────────────────────────────── */
+    /* ── No endpoint configured ──────────────────────────────────────── */
     if (!SCRIPT_URL) {
-      console.warn(
-        '[UOMI Newsletter] SCRIPT_URL is not set.\n' +
-        'Follow the instructions in NEWSLETTER_SETUP.md to deploy your\n' +
-        'Google Apps Script and paste the Web App URL into script.js.'
-      );
-      window.setTimeout(function() {
-        localStorage.setItem(LS_SUBSCRIBED, '1');
-        setStatus('Subscribed! (demo mode — no endpoint configured)', 'nl-success');
-        window.setTimeout(function() { dismiss(true); }, 2200);
-      }, 600);
+      console.warn('[UOMI Newsletter] SCRIPT_URL is not set. See NEWSLETTER_SETUP.md.');
+      localStorage.setItem(LS_SUBSCRIBED, '1');
+      setStatus('Subscribed! (demo mode)', 'nl-success');
+      window.setTimeout(function() { dismiss(true); }, 2000);
       return;
     }
 
-    /* ── Call Google Apps Script via JSONP ───────────────────────────── */
-    jsonpCall(SCRIPT_URL, {
-      email:   email,
-      name:    name,
-      country: country,
-      dob:     dob,
-      sex:     sex,
-    }, function(err, data) {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Subscribe';
+    /* ── Send to Google Apps Script via fetch (no-cors) ──────────────── */
+    var qs = 'email='   + encodeURIComponent(email)
+           + '&name='    + encodeURIComponent(name)
+           + '&country=' + encodeURIComponent(country)
+           + '&dob='     + encodeURIComponent(dob)
+           + '&sex='     + encodeURIComponent(sex);
 
-      if (err || !data) {
-        setStatus('Something went wrong. Please try again.', 'nl-error');
-        return;
-      }
-
-      if (data.status === 'duplicate') {
-        setStatus('This email is already subscribed.', 'nl-info');
-        window.setTimeout(function() { dismiss(false); }, 2500);
-        return;
-      }
-
-      if (data.status === 'success') {
+    fetch(SCRIPT_URL + '?' + qs, { method: 'GET', mode: 'no-cors' })
+      .then(function() {
         localStorage.setItem(LS_SUBSCRIBED, '1');
         setStatus('Thank you for subscribing!', 'nl-success');
         window.setTimeout(function() { dismiss(true); }, 2000);
-        return;
-      }
-
-      setStatus('Something went wrong. Please try again.', 'nl-error');
-    });
+      })
+      .catch(function() {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Subscribe';
+        setStatus('Connection error. Please try again.', 'nl-error');
+      });
   }
 
   /* ── Kick off ───────────────────────────────────────────────────────── */
