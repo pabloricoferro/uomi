@@ -1,30 +1,28 @@
-# P+3 Ceramics
+# UOMI
 
-A Scandinavian-inspired luxury ceramics gallery showcasing artisan works from select workshops in Colombia and Italy.
+A ceramic art studio — handmade pieces in small batches, with full attention to texture and detail.
 
 ## Design Philosophy
 
-- ✨ Scandinavian minimalism meets artistic expression
-- 🎨 Soft color palette: sage, dusty rose, warm grays
-- 🖼️ Gallery-like presentation with generous white space
-- 💎 Luxury feel through restraint and quality
+- Handcrafted, honest materials
+- Minimal, gallery-like presentation
+- Generous white space and animated figures
+- No backend required — pure static site
 
 ## Features
 
-- 🎯 Clean, modern design with artistic touches
-- 💳 Secure one-click checkout via Stripe Payment Links
-- 🏷️ Product filtering by type and workshop
-- 📱 Fully responsive, mobile-first design
-- ✨ Auto-deploy via GitHub Actions
-- 🚫 No backend required - pure static site
+- Clean, modern design with custom SVG figure animations
+- Secure one-click checkout via Stripe Payment Links
+- Fully responsive, mobile-first design
+- Auto-deploy via GitHub Actions
 
 ## Tech Stack
 
-- **HTML5** - Semantic markup
-- **CSS3** - Custom properties, Grid, modern features
-- **Vanilla JavaScript** - No frameworks, no build step
-- **Stripe Payment Links** - Secure checkout
-- **GitHub Pages** - Free hosting
+- **HTML5** — Semantic markup
+- **CSS3** — Custom properties, Grid, modern features
+- **Vanilla JavaScript** — No frameworks, no build step
+- **Stripe Payment Links** — Secure checkout
+- **GitHub Pages** — Free hosting
 
 ## Local Development
 
@@ -58,10 +56,10 @@ window.PRODUCTS = [
   {
     id: "unique-id",
     title: "Product Name",
-    artist: "Workshop Name",
-    type: "Vessel", // or "Wall Piece", "Limited Design", etc.
+    type: "Vessel", // or "Bowl", "Plate", "Wall Piece", etc.
+    description: "One-line description.",
     priceEUR: 640,
-    image: "./images/product-photo.png",
+    image: "./images/product-photo.svg",
     alt: "Description for accessibility",
     stripeLink: "https://buy.stripe.com/xxxxx", // Get from Stripe Dashboard
     available: true,
@@ -81,7 +79,7 @@ See [STRIPE_SETUP.md](./STRIPE_SETUP.md) for complete instructions.
 1. Create payment links in Stripe Dashboard
 2. Get the links (e.g., `https://buy.stripe.com/xxxxx`)
 3. Add to `products.js`
-4. Push to GitHub - done!
+4. Push to GitHub — done!
 
 ## Marking Items as Sold
 
@@ -89,12 +87,12 @@ When a piece sells, update `products.js`:
 
 ```javascript
 {
-  title: "Blue Rust Vessel",
+  title: "Cuenco Luna",
   available: false, // Shows "Sold" button, grayed out
 }
 ```
 
-Commit and push - the site updates automatically.
+Commit and push — the site updates automatically.
 
 ## Deployment
 
@@ -106,29 +104,24 @@ Automatically deploys to GitHub Pages on every push to `main` branch via GitHub 
 - **Domain** (optional): ~€12/year
 - **Stripe fees**: 2.9% + €0.30 per transaction
 
-## Why This Approach?
-
-**Perfect for curated, luxury ceramics:**
-
-- ✅ Each piece is unique and special
-- ✅ Single-item checkout maintains exclusivity
-- ✅ Zero security risk - Stripe owns all pricing
-- ✅ Zero backend maintenance
-- ✅ Beautiful, fast, elegant
-
 ## Project Structure
 
 ```
-evandro-ceramics-store/
-├── index.html           # Main page
+UOMI/
+├── index.html           # Home page (figure animations)
+├── shop.html            # Product grid
+├── about.html           # About page (scroll animation)
+├── contact.html         # Contact page
+├── script.js            # All page animations and logic
+├── figures.js           # SVG figure definitions (used by shop.html)
 ├── products.js          # Product catalog (edit this to add/remove items)
-├── script.js            # Gallery logic
 ├── styles.css           # Styling
-├── images/              # Product photos
+├── images/              # Product images
+├── print/               # Print assets (not used by the website)
 ├── STRIPE_SETUP.md      # Stripe integration guide
 └── .github/workflows/   # Auto-deploy config
 ```
 
 ## License
 
-P+3 Ceramics
+UOMI

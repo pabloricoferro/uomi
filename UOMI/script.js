@@ -1219,6 +1219,324 @@ if (yearEl) {
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   NEWSLETTER POPUP
+   Shown 2.5 s after page load on the first visit (or after 7 days if
+   previously dismissed). Collects: Email, Name, Country, Date of Birth, Sex.
+   Emails are sent to a Google Apps Script Web App which writes them to a
+   Google Sheet (downloadable as .xlsx from Drive).
+   Duplicate detection is handled server-side; result is shown to the user.
+
+   ► Setup: deploy your Google Apps Script and paste the Web App URL below.
+            See NEWSLETTER_SETUP.md for step-by-step instructions.
+═══════════════════════════════════════════════════════════════════════════ */
+(function newsletterPopup() {
+  /* ── Configuration ─────────────────────────────────────────────────── */
+  var SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbyJSEQaHzi_MBSBMXRqUaxqS-VzEEAQDbkh5BK25IZSCRAp3LGjnv6_23rH1eu7ud8p3A/exec';
+  var SHOW_DELAY   = 1000; // ms before popup appears
+  var DISMISS_DAYS = 7;    // days to wait before re-showing after "No thanks"
+
+  /* ── localStorage keys ─────────────────────────────────────────────── */
+  var LS_SUBSCRIBED = 'uomi-nl-subscribed';
+  var LS_DISMISSED  = 'uomi-nl-dismissed';
+
+  /* ── Guard: already subscribed? ────────────────────────────────────── */
+  if (localStorage.getItem(LS_SUBSCRIBED) === '1') return;
+
+  /* ── Guard: dismissed recently? ────────────────────────────────────── */
+  var dismissedAt = parseInt(localStorage.getItem(LS_DISMISSED) || '0', 10);
+  if (dismissedAt && (Date.now() - dismissedAt) < DISMISS_DAYS * 86400000) return;
+
+  /* ── Country list ───────────────────────────────────────────────────── */
+  var COUNTRIES = [
+    'Afghanistan','Albania','Algeria','Andorra','Angola','Antigua and Barbuda',
+    'Argentina','Armenia','Australia','Austria','Azerbaijan','Bahamas','Bahrain',
+    'Bangladesh','Barbados','Belarus','Belgium','Belize','Benin','Bhutan',
+    'Bolivia','Bosnia and Herzegovina','Botswana','Brazil','Brunei','Bulgaria',
+    'Burkina Faso','Burundi','Cabo Verde','Cambodia','Cameroon','Canada',
+    'Central African Republic','Chad','Chile','China','Colombia','Comoros',
+    'Congo','Costa Rica','Croatia','Cuba','Cyprus','Czechia','Denmark',
+    'Djibouti','Dominica','Dominican Republic','DR Congo','Ecuador','Egypt',
+    'El Salvador','Equatorial Guinea','Eritrea','Estonia','Eswatini','Ethiopia',
+    'Fiji','Finland','France','Gabon','Gambia','Georgia','Germany','Ghana',
+    'Greece','Grenada','Guatemala','Guinea','Guinea-Bissau','Guyana','Haiti',
+    'Honduras','Hungary','Iceland','India','Indonesia','Iran','Iraq','Ireland',
+    'Israel','Italy','Jamaica','Japan','Jordan','Kazakhstan','Kenya','Kiribati',
+    'Kuwait','Kyrgyzstan','Laos','Latvia','Lebanon','Lesotho','Liberia','Libya',
+    'Liechtenstein','Lithuania','Luxembourg','Madagascar','Malawi','Malaysia',
+    'Maldives','Mali','Malta','Marshall Islands','Mauritania','Mauritius',
+    'Mexico','Micronesia','Moldova','Monaco','Mongolia','Montenegro','Morocco',
+    'Mozambique','Myanmar','Namibia','Nauru','Nepal','Netherlands','New Zealand',
+    'Nicaragua','Niger','Nigeria','North Korea','North Macedonia','Norway',
+    'Oman','Pakistan','Palau','Palestine','Panama','Papua New Guinea','Paraguay',
+    'Peru','Philippines','Poland','Portugal','Qatar','Romania','Russia','Rwanda',
+    'Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines',
+    'Samoa','San Marino','São Tomé and Príncipe','Saudi Arabia','Senegal',
+    'Serbia','Seychelles','Sierra Leone','Singapore','Slovakia','Slovenia',
+    'Solomon Islands','Somalia','South Africa','South Korea','South Sudan',
+    'Spain','Sri Lanka','Sudan','Suriname','Sweden','Switzerland','Syria',
+    'Tajikistan','Tanzania','Thailand','Timor-Leste','Togo','Tonga',
+    'Trinidad and Tobago','Tunisia','Turkey','Turkmenistan','Tuvalu','Uganda',
+    'Ukraine','United Arab Emirates','United Kingdom','United States','Uruguay',
+    'Uzbekistan','Vanuatu','Venezuela','Vietnam','Yemen','Zambia','Zimbabwe'
+  ];
+
+  /* ── DOM references (set after createPopup) ─────────────────────────── */
+  var overlay, emailInput, nameInput, countrySelect, dobInput, sexSelect,
+      submitBtn, statusEl, waveArm;
+
+  /* ── Build & inject popup HTML ──────────────────────────────────────── */
+  function createPopup() {
+    overlay = document.createElement('div');
+    overlay.id = 'nl-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-labelledby', 'nl-title');
+
+    var countryOpts = COUNTRIES.map(function(c) {
+      return '<option value="' + c + '">' + c + '</option>';
+    }).join('');
+
+    overlay.innerHTML =
+      '<div id="nl-popup">' +
+        '<button id="nl-close" aria-label="Close">&times;</button>' +
+        '<div id="nl-icon" aria-hidden="true">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -10 100 148"' +
+              ' preserveAspectRatio="xMidYMid meet">' +
+            '<ellipse cx="0" cy="10" rx="5" ry="10" fill="currentColor"/>' +
+            '<path fill="currentColor" d="M0 25 C6 25,10 35,11 50 C13 68,14 85,0 85' +
+              ' C-14 85,-13 68,-11 50 C-10 35,-6 25,0 25 Z"/>' +
+            '<g fill="none" stroke="currentColor" stroke-width="3"' +
+                ' stroke-linecap="round" stroke-linejoin="round">' +
+              '<polyline id="nl-arm-r" points="14,32 16,42 19,62 20,67"/>' +
+              '<polyline points="-14,32 -16,42 -19,62 -20,67"/>' +
+              '<polyline points="6,90 6,105 6,130"/>' +
+              '<polyline points="-6,90 -6,105 -6,130"/>' +
+            '</g>' +
+          '</svg>' +
+        '</div>' +
+        '<h2 id="nl-title">Stay in the loop</h2>' +
+        '<p>Be the first to know about new pieces and studio news.</p>' +
+        '<form id="nl-form" novalidate>' +
+          '<div class="nl-row">' +
+            '<input type="email" id="nl-email" placeholder="Email *"' +
+              ' required autocomplete="email"/>' +
+            '<input type="text" id="nl-name" placeholder="Name *"' +
+              ' required autocomplete="name"/>' +
+          '</div>' +
+          '<select id="nl-country" required>' +
+            '<option value="" disabled selected>Country *</option>' +
+            countryOpts +
+          '</select>' +
+          '<div class="nl-field">' +
+            '<label for="nl-dob" class="nl-label">Date of Birth *</label>' +
+            '<input type="date" id="nl-dob" required/>' +
+          '</div>' +
+          '<select id="nl-sex" required>' +
+            '<option value="" disabled selected>Sex *</option>' +
+            '<option value="Male">Male</option>' +
+            '<option value="Female">Female</option>' +
+            '<option value="Special">Special</option>' +
+            '<option value="Rather not say">I\'d rather not say</option>' +
+          '</select>' +
+          '<button type="submit" id="nl-submit">Subscribe</button>' +
+        '</form>' +
+        '<p id="nl-status" role="status" aria-live="polite"></p>' +
+        '<button id="nl-skip">No thanks</button>' +
+      '</div>';
+
+    document.body.appendChild(overlay);
+
+    emailInput    = document.getElementById('nl-email');
+    nameInput     = document.getElementById('nl-name');
+    countrySelect = document.getElementById('nl-country');
+    dobInput      = document.getElementById('nl-dob');
+    sexSelect     = document.getElementById('nl-sex');
+    submitBtn     = document.getElementById('nl-submit');
+    statusEl      = document.getElementById('nl-status');
+    waveArm       = document.getElementById('nl-arm-r');
+
+    document.getElementById('nl-close').addEventListener('click', function() { dismiss(false); });
+    document.getElementById('nl-skip').addEventListener('click', function() { dismiss(false); });
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) dismiss(false);
+    });
+    document.getElementById('nl-form').addEventListener('submit', onSubmit);
+    document.addEventListener('keydown', onKeyDown);
+  }
+
+  /* ── Show ───────────────────────────────────────────────────────────── */
+  function show() {
+    createPopup();
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        overlay.classList.add('nl-visible');
+        emailInput.focus();
+        startWave();
+      });
+    });
+  }
+
+  /* ── Dismiss ────────────────────────────────────────────────────────── */
+  function dismiss(permanent) {
+    document.removeEventListener('keydown', onKeyDown);
+    overlay.classList.remove('nl-visible');
+    if (!permanent) localStorage.setItem(LS_DISMISSED, String(Date.now()));
+    window.setTimeout(function() {
+      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }, 350);
+  }
+
+  /* ── Keyboard ───────────────────────────────────────────────────────── */
+  function onKeyDown(e) {
+    if (e.key === 'Escape') dismiss(false);
+  }
+
+  /* ── Wave arm animation ─────────────────────────────────────────────── */
+  function startWave() {
+    if (!waveArm) return;
+    var frames = [
+      '14,32 16,42 19,62 20,67',
+      '14,32 24,32 44,32 49,32',
+      '14,32 24,32 24,12 24,7',
+      '14,32 24,32 17,13 15,9',
+      '14,32 24,32 31,13 33,9',
+      '14,32 24,32 17,13 15,9',
+      '14,32 24,32 31,13 33,9',
+      '14,32 24,32 24,12 24,7',
+      '14,32 24,32 44,32 49,32',
+      '14,32 16,42 19,62 20,67',
+    ];
+    frames.forEach(function(pts, i) {
+      window.setTimeout(function() {
+        if (waveArm) waveArm.setAttribute('points', pts);
+      }, 500 + i * 230);
+    });
+  }
+
+  /* ── Status helper ──────────────────────────────────────────────────── */
+  function setStatus(msg, cls) {
+    statusEl.textContent = msg;
+    statusEl.className = cls || '';
+  }
+
+  /* ── JSONP helper (avoids CORS with Google Apps Script) ─────────────── */
+  function jsonpCall(url, params, callback) {
+    var cbName = '_nlcb' + Date.now();
+    var script = document.createElement('script');
+    var qs = Object.keys(params).map(function(k) {
+      return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+    }).join('&');
+
+    window[cbName] = function(data) {
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      callback(null, data);
+    };
+
+    script.onerror = function() {
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      callback(new Error('Network error'));
+    };
+
+    script.src = url + (url.indexOf('?') === -1 ? '?' : '&') + qs + '&callback=' + cbName;
+    document.head.appendChild(script);
+  }
+
+  /* ── Form submit ────────────────────────────────────────────────────── */
+  function onSubmit(e) {
+    e.preventDefault();
+
+    var email   = emailInput.value.trim().toLowerCase();
+    var name    = nameInput.value.trim();
+    var country = countrySelect.value;
+    var dob     = dobInput.value;
+    var sex     = sexSelect.value;
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setStatus('Please enter a valid email address.', 'nl-error');
+      emailInput.focus();
+      return;
+    }
+    if (!name) {
+      setStatus('Please enter your name.', 'nl-error');
+      nameInput.focus();
+      return;
+    }
+    if (!country) {
+      setStatus('Please select your country.', 'nl-error');
+      countrySelect.focus();
+      return;
+    }
+    if (!dob) {
+      setStatus('Please enter your date of birth.', 'nl-error');
+      dobInput.focus();
+      return;
+    }
+    if (!sex) {
+      setStatus('Please select an option for sex.', 'nl-error');
+      sexSelect.focus();
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Subscribing\u2026';
+    setStatus('');
+
+    /* ── No endpoint configured yet ──────────────────────────────────── */
+    if (!SCRIPT_URL) {
+      console.warn(
+        '[UOMI Newsletter] SCRIPT_URL is not set.\n' +
+        'Follow the instructions in NEWSLETTER_SETUP.md to deploy your\n' +
+        'Google Apps Script and paste the Web App URL into script.js.'
+      );
+      window.setTimeout(function() {
+        localStorage.setItem(LS_SUBSCRIBED, '1');
+        setStatus('Subscribed! (demo mode — no endpoint configured)', 'nl-success');
+        window.setTimeout(function() { dismiss(true); }, 2200);
+      }, 600);
+      return;
+    }
+
+    /* ── Call Google Apps Script via JSONP ───────────────────────────── */
+    jsonpCall(SCRIPT_URL, {
+      email:   email,
+      name:    name,
+      country: country,
+      dob:     dob,
+      sex:     sex,
+    }, function(err, data) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Subscribe';
+
+      if (err || !data) {
+        setStatus('Something went wrong. Please try again.', 'nl-error');
+        return;
+      }
+
+      if (data.status === 'duplicate') {
+        setStatus('This email is already subscribed.', 'nl-info');
+        window.setTimeout(function() { dismiss(false); }, 2500);
+        return;
+      }
+
+      if (data.status === 'success') {
+        localStorage.setItem(LS_SUBSCRIBED, '1');
+        setStatus('Thank you for subscribing!', 'nl-success');
+        window.setTimeout(function() { dismiss(true); }, 2000);
+        return;
+      }
+
+      setStatus('Something went wrong. Please try again.', 'nl-error');
+    });
+  }
+
+  /* ── Kick off ───────────────────────────────────────────────────────── */
+  window.setTimeout(show, SHOW_DELAY);
+})();
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
    SHOP PAGE — render product cards with quantity selector
    Only runs on pages with <body class="shop-page">
 ═══════════════════════════════════════════════════════════════════════════ */

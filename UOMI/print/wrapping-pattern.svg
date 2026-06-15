@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="50cm" height="70cm"
+     viewBox="0 0 50 70">
+  <defs>
+    <symbol id="sun-solid" viewBox="0 0 100 100" overflow="visible">
+      <g fill="none" stroke="#111111" stroke-width="2.35" stroke-linecap="round"><line x1="50.00" y1="50.00" x2="50.00" y2="6.00"/><line x1="50.00" y1="50.00" x2="57.64" y2="6.67"/><line x1="50.00" y1="50.00" x2="65.05" y2="8.65"/><line x1="50.00" y1="50.00" x2="72.00" y2="11.89"/><line x1="50.00" y1="50.00" x2="78.28" y2="16.29"/><line x1="50.00" y1="50.00" x2="83.71" y2="21.72"/><line x1="50.00" y1="50.00" x2="88.11" y2="28.00"/><line x1="50.00" y1="50.00" x2="91.35" y2="34.95"/><line x1="50.00" y1="50.00" x2="93.33" y2="42.36"/><line x1="50.00" y1="50.00" x2="94.00" y2="50.00"/><line x1="50.00" y1="50.00" x2="93.33" y2="57.64"/><line x1="50.00" y1="50.00" x2="91.35" y2="65.05"/><line x1="50.00" y1="50.00" x2="88.11" y2="72.00"/><line x1="50.00" y1="50.00" x2="83.71" y2="78.28"/><line x1="50.00" y1="50.00" x2="78.28" y2="83.71"/><line x1="50.00" y1="50.00" x2="72.00" y2="88.11"/><line x1="50.00" y1="50.00" x2="65.05" y2="91.35"/><line x1="50.00" y1="50.00" x2="57.64" y2="93.33"/><line x1="50.00" y1="50.00" x2="50.00" y2="94.00"/><line x1="50.00" y1="50.00" x2="42.36" y2="93.33"/><line x1="50.00" y1="50.00" x2="34.95" y2="91.35"/><line x1="50.00" y1="50.00" x2="28.00" y2="88.11"/><line x1="50.00" y1="50.00" x2="21.72" y2="83.71"/><line x1="50.00" y1="50.00" x2="16.29" y2="78.28"/><line x1="50.00" y1="50.00" x2="11.89" y2="72.00"/><line x1="50.00" y1="50.00" x2="8.65" y2="65.05"/><line x1="50.00" y1="50.00" x2="6.67" y2="57.64"/><line x1="50.00" y1="50.00" x2="6.00" y2="50.00"/><line x1="50.00" y1="50.00" x2="6.67" y2="42.36"/><line x1="50.00" y1="50.00" x2="8.65" y2="34.95"/><line x1="50.00" y1="50.00" x2="11.89" y2="28.00"/><line x1="50.00" y1="50.00" x2="16.29" y2="21.72"/><line x1="50.00" y1="50.00" x2="21.72" y2="16.29"/><line x1="50.00" y1="50.00" x2="28.00" y2="11.89"/><line x1="50.00" y1="50.00" x2="34.95" y2="8.65"/><line x1="50.00" y1="50.00" x2="42.36" y2="6.67"/></g><circle cx="50" cy="50" r="11" fill="#111111"/>
+    </symbol>
+    <symbol id="sun-ring" viewBox="0 0 100 100" overflow="visible">
+      <g fill="none" stroke="#111111" stroke-width="2.05" stroke-linecap="round"><line x1="50.00" y1="28.99" x2="50.00" y2="6.00"/><line x1="52.74" y1="29.17" x2="55.74" y2="6.38"/><line x1="55.44" y1="29.71" x2="61.39" y2="7.50"/><line x1="58.04" y1="30.59" x2="66.84" y2="9.35"/><line x1="60.50" y1="31.81" x2="72.00" y2="11.89"/><line x1="62.79" y1="33.33" x2="76.79" y2="15.09"/><line x1="64.86" y1="35.14" x2="81.11" y2="18.89"/><line x1="66.67" y1="37.21" x2="84.91" y2="23.21"/><line x1="68.19" y1="39.50" x2="88.11" y2="28.00"/><line x1="69.41" y1="41.96" x2="90.65" y2="33.16"/><line x1="70.29" y1="44.56" x2="92.50" y2="38.61"/><line x1="70.83" y1="47.26" x2="93.62" y2="44.26"/><line x1="71.01" y1="50.00" x2="94.00" y2="50.00"/><line x1="70.83" y1="52.74" x2="93.62" y2="55.74"/><line x1="70.29" y1="55.44" x2="92.50" y2="61.39"/><line x1="69.41" y1="58.04" x2="90.65" y2="66.84"/><line x1="68.19" y1="60.50" x2="88.11" y2="72.00"/><line x1="66.67" y1="62.79" x2="84.91" y2="76.79"/><line x1="64.86" y1="64.86" x2="81.11" y2="81.11"/><line x1="62.79" y1="66.67" x2="76.79" y2="84.91"/><line x1="60.50" y1="68.19" x2="72.00" y2="88.11"/><line x1="58.04" y1="69.41" x2="66.84" y2="90.65"/><line x1="55.44" y1="70.29" x2="61.39" y2="92.50"/><line x1="52.74" y1="70.83" x2="55.74" y2="93.62"/><line x1="50.00" y1="71.01" x2="50.00" y2="94.00"/><line x1="47.26" y1="70.83" x2="44.26" y2="93.62"/><line x1="44.56" y1="70.29" x2="38.61" y2="92.50"/><line x1="41.96" y1="69.41" x2="33.16" y2="90.65"/><line x1="39.50" y1="68.19" x2="28.00" y2="88.11"/><line x1="37.21" y1="66.67" x2="23.21" y2="84.91"/><line x1="35.14" y1="64.86" x2="18.89" y2="81.11"/><line x1="33.33" y1="62.79" x2="15.09" y2="76.79"/><line x1="31.81" y1="60.50" x2="11.89" y2="72.00"/><line x1="30.59" y1="58.04" x2="9.35" y2="66.84"/><line x1="29.71" y1="55.44" x2="7.50" y2="61.39"/><line x1="29.17" y1="52.74" x2="6.38" y2="55.74"/><line x1="28.99" y1="50.00" x2="6.00" y2="50.00"/><line x1="29.17" y1="47.26" x2="6.38" y2="44.26"/><line x1="29.71" y1="44.56" x2="7.50" y2="38.61"/><line x1="30.59" y1="41.96" x2="9.35" y2="33.16"/><line x1="31.81" y1="39.50" x2="11.89" y2="28.00"/><line x1="33.33" y1="37.21" x2="15.09" y2="23.21"/><line x1="35.14" y1="35.14" x2="18.89" y2="18.89"/><line x1="37.21" y1="33.33" x2="23.21" y2="15.09"/><line x1="39.50" y1="31.81" x2="28.00" y2="11.89"/><line x1="41.96" y1="30.59" x2="33.16" y2="9.35"/><line x1="44.56" y1="29.71" x2="38.61" y2="7.50"/><line x1="47.26" y1="29.17" x2="44.26" y2="6.38"/></g>
+    </symbol>
+  </defs>
+  <rect width="50" height="70" fill="#ffffff"/>
+  <g transform="translate(21.152 33.322) rotate(160.03)">
+    <use href="#sun-solid" x="-3.300" y="-3.300"
+         width="6.601" height="6.601"/>
+  </g>
+  <g transform="translate(10.024 7.399) rotate(277.40)">
+    <use href="#sun-solid" x="-2.323" y="-2.323"
+         width="4.647" height="4.647"/>
+  </g>
+  <g transform="translate(44.909 63.838) rotate(96.15)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(44.704 36.504) rotate(72.16)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(38.787 24.789) rotate(220.50)">
+    <use href="#sun-ring" x="-1.798" y="-1.798"
+         width="3.597" height="3.597"/>
+  </g>
+  <g transform="translate(31.141 8.513) rotate(177.02)">
+    <use href="#sun-ring" x="-1.907" y="-1.907"
+         width="3.814" height="3.814"/>
+  </g>
+  <g transform="translate(42.882 6.614) rotate(172.80)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(32.919 58.195) rotate(187.03)">
+    <use href="#sun-ring" x="-2.880" y="-2.880"
+         width="5.761" height="5.761"/>
+  </g>
+  <g transform="translate(47.823 58.855) rotate(92.20)">
+    <use href="#sun-solid" x="-0.813" y="-0.813"
+         width="1.627" height="1.627"/>
+  </g>
+  <g transform="translate(24.612 10.700) rotate(351.62)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(13.443 21.821) rotate(91.13)">
+    <use href="#sun-solid" x="-5.086" y="-5.086"
+         width="10.172" height="10.172"/>
+  </g>
+  <g transform="translate(21.980 66.705) rotate(180.84)">
+    <use href="#sun-ring" x="-1.591" y="-1.591"
+         width="3.182" height="3.182"/>
+  </g>
+  <g transform="translate(27.750 51.352) rotate(194.30)">
+    <use href="#sun-ring" x="-3.714" y="-3.714"
+         width="7.429" height="7.429"/>
+  </g>
+  <g transform="translate(38.764 3.021) rotate(145.07)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(5.939 63.581) rotate(35.22)">
+    <use href="#sun-ring" x="-1.725" y="-1.725"
+         width="3.449" height="3.449"/>
+  </g>
+  <g transform="translate(28.444 17.150) rotate(293.55)">
+    <use href="#sun-solid" x="-4.631" y="-4.631"
+         width="9.262" height="9.262"/>
+  </g>
+  <g transform="translate(34.393 42.226) rotate(66.44)">
+    <use href="#sun-solid" x="-2.271" y="-2.271"
+         width="4.541" height="4.541"/>
+  </g>
+  <g transform="translate(26.354 57.795) rotate(336.01)">
+    <use href="#sun-ring" x="-0.894" y="-0.894"
+         width="1.789" height="1.789"/>
+  </g>
+  <g transform="translate(12.440 59.800) rotate(346.88)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(19.014 5.630) rotate(53.97)">
+    <use href="#sun-ring" x="-4.104" y="-4.104"
+         width="8.208" height="8.208"/>
+  </g>
+  <g transform="translate(9.616 50.003) rotate(61.72)">
+    <use href="#sun-ring" x="-4.684" y="-4.684"
+         width="9.369" height="9.369"/>
+  </g>
+  <g transform="translate(43.380 23.254) rotate(106.20)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(26.398 4.554) rotate(135.53)">
+    <use href="#sun-solid" x="-1.829" y="-1.829"
+         width="3.658" height="3.658"/>
+  </g>
+  <g transform="translate(18.259 12.633) rotate(275.89)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(5.065 24.221) rotate(339.11)">
+    <use href="#sun-ring" x="-0.567" y="-0.567"
+         width="1.133" height="1.133"/>
+  </g>
+  <g transform="translate(3.621 14.652) rotate(232.30)">
+    <use href="#sun-ring" x="-2.606" y="-2.606"
+         width="5.213" height="5.213"/>
+  </g>
+  <g transform="translate(28.585 30.614) rotate(35.58)">
+    <use href="#sun-ring" x="-1.400" y="-1.400"
+         width="2.800" height="2.800"/>
+  </g>
+  <g transform="translate(38.208 49.655) rotate(154.42)">
+    <use href="#sun-ring" x="-5.057" y="-5.057"
+         width="10.115" height="10.115"/>
+  </g>
+  <g transform="translate(3.432 57.855) rotate(227.45)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(19.417 54.087) rotate(143.55)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(35.069 66.315) rotate(247.48)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(8.203 37.997) rotate(73.12)">
+    <use href="#sun-ring" x="-4.981" y="-4.981"
+         width="9.961" height="9.961"/>
+  </g>
+  <g transform="translate(39.449 16.575) rotate(76.41)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(46.947 42.625) rotate(54.10)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(23.044 42.617) rotate(1.71)">
+    <use href="#sun-solid" x="-4.718" y="-4.718"
+         width="9.437" height="9.437"/>
+  </g>
+  <g transform="translate(18.371 63.578) rotate(359.36)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(36.073 33.513) rotate(239.40)">
+    <use href="#sun-solid" x="-4.955" y="-4.955"
+         width="9.909" height="9.909"/>
+  </g>
+  <g transform="translate(21.645 57.671) rotate(190.87)">
+    <use href="#sun-solid" x="-1.450" y="-1.450"
+         width="2.900" height="2.900"/>
+  </g>
+  <g transform="translate(47.364 55.027) rotate(29.10)">
+    <use href="#sun-solid" x="-2.027" y="-2.027"
+         width="4.054" height="4.054"/>
+  </g>
+  <g transform="translate(37.597 61.291) rotate(317.44)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(45.001 12.807) rotate(79.53)">
+    <use href="#sun-ring" x="-3.968" y="-3.968"
+         width="7.936" height="7.936"/>
+  </g>
+  <g transform="translate(33.744 22.143) rotate(191.55)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(13.800 31.145) rotate(249.93)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(45.474 2.861) rotate(34.93)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(29.829 67.368) rotate(350.13)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(6.561 28.793) rotate(330.81)">
+    <use href="#sun-solid" x="-2.818" y="-2.818"
+         width="5.637" height="5.637"/>
+  </g>
+  <g transform="translate(40.300 40.995) rotate(283.09)">
+    <use href="#sun-solid" x="-2.453" y="-2.453"
+         width="4.907" height="4.907"/>
+  </g>
+  <g transform="translate(46.297 26.804) rotate(97.08)">
+    <use href="#sun-solid" x="-1.946" y="-1.946"
+         width="3.893" height="3.893"/>
+  </g>
+  <g transform="translate(47.754 48.703) rotate(200.57)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(24.017 25.347) rotate(131.45)">
+    <use href="#sun-solid" x="-3.020" y="-3.020"
+         width="6.041" height="6.041"/>
+  </g>
+  <g transform="translate(9.901 2.417) rotate(318.86)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(14.282 66.065) rotate(227.27)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(8.776 12.864) rotate(45.68)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(3.858 4.525) rotate(67.40)">
+    <use href="#sun-ring" x="-3.306" y="-3.306"
+         width="6.612" height="6.612"/>
+  </g>
+  <g transform="translate(42.829 58.719) rotate(183.45)">
+    <use href="#sun-solid" x="-2.239" y="-2.239"
+         width="4.478" height="4.478"/>
+  </g>
+  <g transform="translate(35.276 14.594) rotate(318.71)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(17.724 49.857) rotate(286.22)">
+    <use href="#sun-solid" x="-1.739" y="-1.739"
+         width="3.478" height="3.478"/>
+  </g>
+  <g transform="translate(16.326 39.706) rotate(182.81)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(27.725 63.343) rotate(164.54)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(33.476 2.481) rotate(32.57)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(37.211 8.515) rotate(266.17)">
+    <use href="#sun-solid" x="-2.945" y="-2.945"
+         width="5.890" height="5.890"/>
+  </g>
+  <g transform="translate(2.977 20.136) rotate(340.10)">
+      <svg x="-1.103" y="-1.600" width="2.207" height="3.200"
+           viewBox="-50 -10 100 145" overflow="visible">
+        
+  <g fill="#111111" stroke="#111111">
+    <ellipse cx="0" cy="10" rx="5" ry="10"/>
+    <path d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>
+    <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="-14,32 -16,42 -19,62 -20,67"/>
+      <polyline points="14,32 16,42 19,62 20,67"/>
+      <polyline points="6,90 6,105 6,130"/>
+      <polyline points="-6,90 -6,105 -6,130"/>
+    </g>
+  </g>
+      </svg>
+    </g>
+  <g transform="translate(1.980 43.789) rotate(177.37)">
+    <use href="#sun-ring" x="-1.297" y="-1.297"
+         width="2.595" height="2.595"/>
+  </g>
+  <g transform="translate(42.118 27.456) rotate(332.84)">
+    <use href="#sun-ring" x="-1.263" y="-1.263"
+         width="2.527" height="2.527"/>
+  </g>
+</svg>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="50cm" height="70cm"
+     viewBox="0 0 50 70">
+  <defs>
+    <symbol color="#111111" id="f-stand" viewBox="-50 -2 100 140" overflow="visible">'
+    +       '<ellipse cx="0" cy="10" rx="5" ry="10" fill="#111111"/>'
+    +       '<path fill="#111111" d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>'
+    +       '<g fill="none" stroke="#111111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
+    +         '<polyline points="14,32 16,42 19,62 20,67"/>'
+    +         '<polyline points="-14,32 -16,42 -19,62 -20,67"/>'
+    +         '<polyline points="6,90 6,105 6,130"/>'
+    +         '<polyline points="-6,90 -6,105 -6,130"/>'
+    +       '</g>'
+    +     '</symbol>
+    <symbol color="#111111" id="f-up" viewBox="-50 -10 100 150" overflow="visible">'
+    +       '<ellipse cx="0" cy="10" rx="5" ry="10" fill="#111111"/>'
+    +       '<path fill="#111111" d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>'
+    +       '<g fill="none" stroke="#111111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
+    +         '<polyline points="14,32 16,22 19,2 20,-3"/>'
+    +         '<polyline points="-14,32 -16,22 -19,2 -20,-3"/>'
+    +         '<polyline points="6,90 6,105 6,130"/>'
+    +         '<polyline points="-6,90 -6,105 -6,130"/>'
+    +       '</g>'
+    +     '</symbol>
+    <symbol color="#111111" id="f-out" viewBox="-60 -2 120 140" overflow="visible">'
+    +       '<ellipse cx="0" cy="10" rx="5" ry="10" fill="#111111"/>'
+    +       '<path fill="#111111" d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>'
+    +       '<g fill="none" stroke="#111111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
+    +         '<polyline points="14,32 24,32 44,32 49,32"/>'
+    +         '<polyline points="-14,32 -24,32 -44,32 -49,32"/>'
+    +         '<polyline points="6,90 6,105 6,130"/>'
+    +         '<polyline points="-6,90 -6,105 -6,130"/>'
+    +       '</g>'
+    +     '</symbol>
+    <symbol color="#111111" id="f-walk" viewBox="-50 -2 100 140" overflow="visible">'
+    +       '<ellipse cx="0" cy="10" rx="5" ry="10" fill="#111111"/>'
+    +       '<path fill="#111111" d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>'
+    +       '<g fill="none" stroke="#111111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
+    +         '<polyline points="14,32 16,42 19,62 20,67"/>'
+    +         '<polyline points="-14,32 -16,42 -19,62 -20,67"/>'
+    +         '<polyline points="6,90 12,104 14,129"/>'
+    +         '<polyline points="-6,90 -9,105 -18,129"/>'
+    +       '</g>'
+    +     '</symbol>
+    <symbol color="#111111" id="f-dance" viewBox="-60 -10 120 145" overflow="visible">'
+    +       '<ellipse cx="0" cy="10" rx="5" ry="10" fill="#111111"/>'
+    +       '<path fill="#111111" d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>'
+    +       '<g fill="none" stroke="#111111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
+    +         '<polyline points="14,32 19,23 29,6 32,2"/>'
+    +         '<polyline points="-14,32 -23,37 -40,47 -44,50"/>'
+    +         '<polyline points="6,90 14,103 27,125"/>'
+    +         '<polyline points="-6,90 -14,103 -27,125"/>'
+    +       '</g>'
+    +     '</symbol>
+    <symbol color="#111111" id="f-wave" viewBox="-50 -10 100 145" overflow="visible">'
+    +       '<ellipse cx="0" cy="10" rx="5" ry="10" fill="#111111"/>'
+    +       '<path fill="#111111" d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>'
+    +       '<g fill="none" stroke="#111111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
+    +         '<polyline points="14,32 16,22 19,2 20,-3"/>'
+    +         '<polyline points="-14,32 -16,42 -19,62 -20,67"/>'
+    +         '<polyline points="6,90 6,105 6,130"/>'
+    +         '<polyline points="-6,90 -6,105 -6,130"/>'
+    +       '</g>'
+    +     '</symbol>
+    <symbol color="#111111" id="f-action" viewBox="-50 -10 100 145" overflow="visible">'
+    +       '<ellipse cx="0" cy="10" rx="5" ry="10" fill="#111111"/>'
+    +       '<path fill="#111111" d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>'
+    +       '<g fill="none" stroke="#111111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
+    +         '<polyline points="14,32 23,27 33,10 35,6"/>'
+    +         '<polyline points="-14,32 -24,32 -34,15 -36,11"/>'
+    +         '<polyline points="6,90 21,90 21,115"/>'
+    +         '<polyline points="-6,90 -6,105 -6,130"/>'
+    +       '</g>'
+    +     '</symbol>
+    <symbol color="#111111" id="f-shrug" viewBox="-50 -2 100 140" overflow="visible">'
+    +       '<ellipse cx="0" cy="10" rx="5" ry="10" fill="#111111"/>'
+    +       '<path fill="#111111" d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>'
+    +       '<g fill="none" stroke="#111111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
+    +         '<polyline points="14,32 24,32 27,12 28,7"/>'
+    +         '<polyline points="-14,32 -24,32 -27,12 -28,7"/>'
+    +         '<polyline points="6,90 6,105 6,130"/>'
+    +         '<polyline points="-6,90 -6,105 -6,130"/>'
+    +       '</g>'
+    +     '</symbol>
+    <symbol color="#111111" id="f-relax" viewBox="-50 -2 100 140" overflow="visible">'
+    +       '<ellipse cx="0" cy="10" rx="5" ry="10" fill="#111111"/>'
+    +       '<path fill="#111111" d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>'
+    +       '<g fill="none" stroke="#111111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
+    +         '<polyline points="14,32 17,41 7,58 5,62"/>'
+    +         '<polyline points="-14,32 -17,41 -7,58 -5,62"/>'
+    +         '<polyline points="6,90 10,104 16,128"/>'
+    +         '<polyline points="-6,90 -10,104 -16,128"/>'
+    +       '</g>'
+    +     '</symbol>
+    <symbol color="#111111" id="f-walk2" viewBox="-50 -2 100 140" overflow="visible">'
+    +       '<ellipse cx="0" cy="10" rx="5" ry="10" fill="#111111"/>'
+    +       '<path fill="#111111" d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>'
+    +       '<g fill="none" stroke="#111111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
+    +         '<polyline points="14,32 23,35 33,18 35,14"/>'
+    +         '<polyline points="-14,32 -24,30 -44,30 -49,30"/>'
+    +         '<polyline points="6,90 12,104 14,129"/>'
+    +         '<polyline points="-6,90 -9,105 -18,129"/>'
+    +       '</g>'
+    +     '</symbol>
+    <symbol color="#111111" id="f-star" viewBox="-60 -10 120 145" overflow="visible">'
+    +       '<ellipse cx="0" cy="10" rx="5" ry="10" fill="#111111"/>'
+    +       '<path fill="#111111" d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>'
+    +       '<g fill="none" stroke="#111111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
+    +         '<polyline points="14,32 21,25 35,11 38.5,7.5"/>'
+    +         '<polyline points="-14,32 -21,25 -35,11 -38.5,7.5"/>'
+    +         '<polyline points="6,90 13.5,103 26,124.5"/>'
+    +         '<polyline points="-6,90 -13.5,103 -26,124.5"/>'
+    +       '</g>'
+    +     '</symbol>
+    <symbol color="#111111" id="f-cheer" viewBox="-50 -10 100 145" overflow="visible">'
+    +       '<ellipse cx="0" cy="10" rx="5" ry="10" fill="#111111"/>'
+    +       '<path fill="#111111" d="M0 25 C6 25, 10 35, 11 50 C13 68, 14 85, 0 85 C-14 85, -13 68, -11 50 C-10 35, -6 25, 0 25 Z"/>'
+    +       '<g fill="none" stroke="#111111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'
+    +         '<polyline points="14,32 19,23.5 19,3.5 19,-1.5"/>'
+    +         '<polyline points="-14,32 -24,32 -34,14.5 -36.5,10"/>'
+    +         '<polyline points="6,90 12,104 14,129"/>'
+    +         '<polyline points="-6,90 -9,105 -18,129"/>'
+    +       '</g>'
+    +     '</symbol>
+  </defs>
+  <rect width="50" height="70" fill="#ffffff"/>
+  <use href="#f-stand" x="3.267" y="13.900" width="6.8" height="10.2"/>
+  <use href="#f-up" x="10.600" y="13.900" width="6.8" height="10.2"/>
+  <use href="#f-shrug" x="17.933" y="13.900" width="6.8" height="10.2"/>
+  <use href="#f-relax" x="25.267" y="13.900" width="6.8" height="10.2"/>
+  <use href="#f-cheer" x="32.600" y="13.900" width="6.8" height="10.2"/>
+  <use href="#f-walk2" x="39.933" y="13.900" width="6.8" height="10.2"/>
+  <use href="#f-walk" x="3.267" y="45.900" width="6.8" height="10.2"/>
+  <use href="#f-dance" x="10.600" y="45.900" width="6.8" height="10.2"/>
+  <use href="#f-out" x="17.933" y="45.900" width="6.8" height="10.2"/>
+  <use href="#f-wave" x="25.267" y="45.900" width="6.8" height="10.2"/>
+  <use href="#f-action" x="32.600" y="45.900" width="6.8" height="10.2"/>
+  <use href="#f-star" x="39.933" y="45.900" width="6.8" height="10.2"/>
+</svg>
