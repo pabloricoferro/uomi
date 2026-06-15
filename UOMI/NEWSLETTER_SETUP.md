@@ -24,40 +24,58 @@ Leave all other rows empty — the script will fill them automatically.
 2. Delete any existing code and paste the following:
 
 ```javascript
-function doGet(e) {
-  var callback = e.parameter.callback || 'callback';
-  var email    = (e.parameter.email   || '').toLowerCase().trim();
-  var name     = (e.parameter.name    || '').trim();
-  var country  = (e.parameter.country || '').trim();
-  var dob      = (e.parameter.dob     || '').trim();
-  var sex      = (e.parameter.sex     || '').trim();
+// ─── Paste your spreadsheet ID here (from the URL of your Google Sheet) ───
+var SPREADSHEET_ID = '1kijPBOhZoxQ-u-Dl1rNa6X-_GuTmvZrLR5eOavtk2sY';
 
-  if (!email || !isValidEmail(email)) {
-    return respond(callback, { status: 'error', message: 'Invalid email' });
-  }
+function doPost(e) {
+  try {
+    var email   = (e.parameter.email   || '').toLowerCase().trim();
+    var name    = (e.parameter.name    || '').trim();
+    var country = (e.parameter.country || '').trim();
+    var dob     = (e.parameter.dob     || '').trim();
+    var sex     = (e.parameter.sex     || '').trim();
 
-  var sheet   = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var lastRow = sheet.getLastRow();
+    Logger.log('Newsletter signup: ' + email);
 
-  // Check for duplicate email (skip header row)
-  if (lastRow >= 2) {
-    var emails = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
-    for (var i = 0; i < emails.length; i++) {
-      if (emails[i][0].toString().toLowerCase().trim() === email) {
-        return respond(callback, { status: 'duplicate' });
+    if (!email || !isValidEmail(email)) {
+      Logger.log('Invalid email, skipping.');
+      return ok();
+    }
+
+    var sheet   = SpreadsheetApp.openById(SPREADSHEET_ID).getActiveSheet();
+    var lastRow = sheet.getLastRow();
+
+    // Check for duplicate (skip header row)
+    if (lastRow >= 2) {
+      var existing = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+      for (var i = 0; i < existing.length; i++) {
+        if (existing[i][0].toString().toLowerCase().trim() === email) {
+          Logger.log('Duplicate email, skipping: ' + email);
+          return ok();
+        }
       }
     }
-  }
 
-  // Append new subscriber — columns: Email, Name, Country, DOB, Sex, Subscribed At, Page
-  sheet.appendRow([email, name, country, dob, sex, new Date(), e.parameter.page || '']);
-  return respond(callback, { status: 'success' });
+    // Write new row: Email | Name | Country | Date of Birth | Sex | Subscribed At
+    sheet.appendRow([email, name, country, dob, sex, new Date()]);
+    Logger.log('Saved: ' + email);
+    return ok();
+
+  } catch (err) {
+    Logger.log('Error: ' + err.toString());
+    return ok(); // Always return 200 so the form doesn't hang
+  }
 }
 
-function respond(callback, data) {
+// Also handle GET (for browser tests)
+function doGet(e) {
+  return doPost(e);
+}
+
+function ok() {
   return ContentService
-    .createTextOutput(callback + '(' + JSON.stringify(data) + ')')
-    .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    .createTextOutput('ok')
+    .setMimeType(ContentService.MimeType.TEXT);
 }
 
 function isValidEmail(email) {
