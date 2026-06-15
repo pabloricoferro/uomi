@@ -24,7 +24,6 @@ Leave all other rows empty — the script will fill them automatically.
 2. Delete any existing code and paste the following:
 
 ```javascript
-// ─── Paste your spreadsheet ID here (from the URL of your Google Sheet) ───
 var SPREADSHEET_ID = '1kijPBOhZoxQ-u-Dl1rNa6X-_GuTmvZrLR5eOavtk2sY';
 
 function doPost(e) {
@@ -32,42 +31,34 @@ function doPost(e) {
     var email   = (e.parameter.email   || '').toLowerCase().trim();
     var name    = (e.parameter.name    || '').trim();
     var country = (e.parameter.country || '').trim();
-    var dob     = (e.parameter.dob     || '').trim();
     var sex     = (e.parameter.sex     || '').trim();
 
-    Logger.log('Newsletter signup: ' + email);
-
-    if (!email || !isValidEmail(email)) {
-      Logger.log('Invalid email, skipping.');
-      return ok();
-    }
+    Logger.log('Received: ' + email);
+    if (!email) return ok();
 
     var sheet   = SpreadsheetApp.openById(SPREADSHEET_ID).getActiveSheet();
     var lastRow = sheet.getLastRow();
 
-    // Check for duplicate (skip header row)
     if (lastRow >= 2) {
       var existing = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
       for (var i = 0; i < existing.length; i++) {
         if (existing[i][0].toString().toLowerCase().trim() === email) {
-          Logger.log('Duplicate email, skipping: ' + email);
+          Logger.log('Duplicate: ' + email);
           return ok();
         }
       }
     }
 
-    // Write new row: Email | Name | Country | Date of Birth | Sex | Subscribed At
-    sheet.appendRow([email, name, country, dob, sex, new Date()]);
+    sheet.appendRow([email, name, country, sex, new Date()]);
     Logger.log('Saved: ' + email);
     return ok();
 
   } catch (err) {
-    Logger.log('Error: ' + err.toString());
-    return ok(); // Always return 200 so the form doesn't hang
+    Logger.log('ERROR: ' + err.toString());
+    return ok();
   }
 }
 
-// Also handle GET (for browser tests)
 function doGet(e) {
   return doPost(e);
 }
@@ -78,8 +69,11 @@ function ok() {
     .setMimeType(ContentService.MimeType.TEXT);
 }
 
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+// ── Run this manually from the editor to test that the sheet is writable ──
+function testWrite() {
+  var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getActiveSheet();
+  sheet.appendRow(['test@uomi.art', 'Test User', 'Spain', 'Male', new Date()]);
+  Logger.log('testWrite OK — check the sheet for a new row.');
 }
 ```
 

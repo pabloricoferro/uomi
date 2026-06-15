@@ -1475,44 +1475,21 @@ if (yearEl) {
       return;
     }
 
-    /* ── Send to Google Apps Script via hidden iframe POST ───────────── */
-    /* This is the only method that reliably follows Google's redirect    */
-    /* chain without CORS issues on static / GitHub Pages sites.          */
-    var frameName = 'nl-frame-' + Date.now();
-    var iframe = document.createElement('iframe');
-    iframe.name = frameName;
-    iframe.style.cssText = 'display:none;position:absolute;width:0;height:0;border:0;';
-    document.body.appendChild(iframe);
+    /* ── Send to Google Apps Script via img pixel (GET) ─────────────── */
+    /* Image requests always follow cross-origin redirects with no CORS  */
+    /* restrictions — the same technique used by analytics pixels.       */
+    var qs = 'email='   + encodeURIComponent(email)
+           + '&name='    + encodeURIComponent(name)
+           + '&country=' + encodeURIComponent(country)
+           + '&dob='     + encodeURIComponent(dob)
+           + '&sex='     + encodeURIComponent(sex)
+           + '&t='       + Date.now();
 
-    var form = document.createElement('form');
-    form.method  = 'POST';
-    form.action  = SCRIPT_URL;
-    form.target  = frameName;
-    form.enctype = 'application/x-www-form-urlencoded';
+    new Image().src = SCRIPT_URL + '?' + qs;
 
-    var fields = { email: email, name: name, country: country, dob: dob, sex: sex };
-    Object.keys(fields).forEach(function(k) {
-      var inp = document.createElement('input');
-      inp.type  = 'hidden';
-      inp.name  = k;
-      inp.value = fields[k];
-      form.appendChild(inp);
-    });
-
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-
-    /* Can't read the iframe response cross-origin — assume success and  */
-    /* let the Apps Script handle server-side deduplication silently.    */
     localStorage.setItem(LS_SUBSCRIBED, '1');
     setStatus('Thank you for subscribing!', 'nl-success');
-    window.setTimeout(function() {
-      dismiss(true);
-      window.setTimeout(function() {
-        if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-      }, 2000);
-    }, 2000);
+    window.setTimeout(function() { dismiss(true); }, 2000);
   }
 
   /* ── Kick off ───────────────────────────────────────────────────────── */
