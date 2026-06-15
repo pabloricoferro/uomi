@@ -1432,44 +1432,6 @@ if (yearEl) {
     statusEl.className = cls || '';
   }
 
-  /* ── Submit via GET form → hidden iframe (same as browser URL test) ── */
-  function submitViaGetForm(fields, onDone) {
-    var frameName = 'nl_frame_' + Date.now();
-    var iframe = document.createElement('iframe');
-    iframe.name = frameName;
-    iframe.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden';
-    document.body.appendChild(iframe);
-
-    var form = document.createElement('form');
-    form.method = 'GET';
-    form.action = SCRIPT_URL;
-    form.target = frameName;
-
-    Object.keys(fields).forEach(function(key) {
-      var input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = fields[key];
-      form.appendChild(input);
-    });
-
-    var done = false;
-    function finish() {
-      if (done) return;
-      done = true;
-      if (form.parentNode) form.parentNode.removeChild(form);
-      window.setTimeout(function() {
-        if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-      }, 2000);
-      onDone();
-    }
-
-    iframe.onload = finish;
-    document.body.appendChild(form);
-    form.submit();
-    window.setTimeout(finish, 4000);
-  }
-
   /* ── Form submit ────────────────────────────────────────────────────── */
   function onSubmit(e) {
     e.preventDefault();
@@ -1506,7 +1468,6 @@ if (yearEl) {
       return;
     }
 
-    /* ── Already subscribed from this browser (same email) ───────────── */
     if (isEmailSubscribed(email)) {
       setStatus('This email is already subscribed.', 'nl-info');
       window.setTimeout(function() { dismiss(false); }, 2500);
@@ -1517,29 +1478,68 @@ if (yearEl) {
     submitBtn.textContent = 'Subscribing\u2026';
     setStatus('');
 
-    /* ── No endpoint configured ──────────────────────────────────────── */
     if (!SCRIPT_URL) {
-      console.warn('[UOMI Newsletter] SCRIPT_URL is not set. See NEWSLETTER_SETUP.md.');
       markEmailSubscribed(email);
       setStatus('Subscribed! (demo mode)', 'nl-success');
       window.setTimeout(function() { dismiss(true); }, 2000);
       return;
     }
 
-    /* ── GET form in hidden iframe — mirrors the working browser test ── */
-    submitViaGetForm({
-      email:   email,
-      name:    name,
-      country: country,
-      sex:     sex,
-      age:     dob,
-    }, function() {
+    /* ── JSONP — only method that reliably follows Google's redirect chain ── */
+    var cbName = 'nl_cb_' + Date.now();
+    var tag    = document.createElement('script');
+    var done   = false;
+    var timer  = null;
+
+    var qs = 'email='    + encodeURIComponent(email)
+           + '&name='    + encodeURIComponent(name)
+           + '&country=' + encodeURIComponent(country)
+           + '&sex='     + encodeURIComponent(sex)
+           + '&age='     + encodeURIComponent(dob)
+           + '&callback='+ encodeURIComponent(cbName);
+
+    function cleanup() {
+      clearTimeout(timer);
+      delete window[cbName];
+      if (tag.parentNode) tag.parentNode.removeChild(tag);
+    }
+
+    function onSuccess() {
+      if (done) return;
+      done = true;
+      cleanup();
       markEmailSubscribed(email);
       submitBtn.disabled = false;
       submitBtn.textContent = 'Subscribe';
       setStatus('Thank you for subscribing!', 'nl-success');
       window.setTimeout(function() { dismiss(true); }, 2000);
-    });
+    }
+
+    function onError(msg) {
+      if (done) return;
+      done = true;
+      cleanup();
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Subscribe';
+      setStatus(msg || 'Connection error. Please try again.', 'nl-error');
+    }
+
+    window[cbName] = function(data) {
+      if (!data) { onError(); return; }
+      if (data.status === 'duplicate') {
+        done = true;
+        cleanup();
+        setStatus('This email is already subscribed.', 'nl-info');
+        window.setTimeout(function() { dismiss(false); }, 2500);
+        return;
+      }
+      onSuccess();
+    };
+
+    tag.src    = SCRIPT_URL + '?' + qs;
+    tag.onerror = function() { onError(); };
+    timer = window.setTimeout(function() { onError('Request timed out. Please try again.'); }, 10000);
+    document.head.appendChild(tag);
   }
 
   /* ── Kick off ───────────────────────────────────────────────────────── */

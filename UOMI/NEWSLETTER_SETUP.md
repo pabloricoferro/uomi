@@ -29,19 +29,23 @@ Leave all other rows empty — the script will fill them automatically.
 ```javascript
 var SPREADSHEET_ID = '1kijPBOhZoxQ-u-Dl1rNa6X-_GuTmvZrLR5eOavtk2sY';
 
-function doPost(e) {
-  try {
-    e = e || {};
-    var p = e.parameter || {};
+function doGet(e) {
+  e = e || {};
+  var p  = e.parameter || {};
+  var cb = p.callback  || 'callback';
 
+  try {
     var email   = (p.email   || '').toLowerCase().trim();
     var name    = (p.name    || '').trim();
     var country = (p.country || '').trim();
     var sex     = (p.sex     || '').trim();
-    var age     = (p.age     || p.dob || '').trim();
+    var age     = (p.age     || '').trim();
 
     Logger.log('Received: ' + email);
-    if (!email) return ok();
+
+    if (!email) {
+      return jsonp(cb, {status: 'error', msg: 'No email'});
+    }
 
     var sheet   = SpreadsheetApp.openById(SPREADSHEET_ID).getActiveSheet();
     var lastRow = sheet.getLastRow();
@@ -51,37 +55,33 @@ function doPost(e) {
       for (var i = 0; i < existing.length; i++) {
         if (existing[i][0].toString().toLowerCase().trim() === email) {
           Logger.log('Duplicate: ' + email);
-          return ok();
+          return jsonp(cb, {status: 'duplicate'});
         }
       }
     }
 
-    // Columns: Email | Name | Country | Sex | Age (date of birth)
+    // Columns match sheet: Email | Name | Country | Sex | Age
     sheet.appendRow([email, name, country, sex, age]);
     Logger.log('Saved: ' + email);
-    return ok();
+    return jsonp(cb, {status: 'success'});
 
   } catch (err) {
     Logger.log('ERROR: ' + err.toString());
-    return ok();
+    return jsonp(cb, {status: 'error', msg: err.toString()});
   }
 }
 
-function doGet(e) {
-  return doPost(e);
-}
-
-function ok() {
+function jsonp(callback, data) {
   return ContentService
-    .createTextOutput('ok')
-    .setMimeType(ContentService.MimeType.TEXT);
+    .createTextOutput(callback + '(' + JSON.stringify(data) + ')')
+    .setMimeType(ContentService.MimeType.JAVASCRIPT);
 }
 
-// Run THIS from the editor (not doGet): select testWrite → Run
+// ── Select testWrite in dropdown → Run (NOT doGet) ──
 function testWrite() {
   var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getActiveSheet();
-  sheet.appendRow(['test@uomi.art', 'Test User', 'Spain', 'Male', '1990-01-01']);
-  Logger.log('testWrite OK — check the sheet for a new row.');
+  sheet.appendRow(['test2@uomi.art', 'Test User', 'Spain', 'Male', '1990-01-01']);
+  Logger.log('testWrite OK');
 }
 ```
 
