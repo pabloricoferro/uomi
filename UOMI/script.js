@@ -1231,7 +1231,7 @@ if (yearEl) {
 ═══════════════════════════════════════════════════════════════════════════ */
 (function newsletterPopup() {
   /* ── Configuration ─────────────────────────────────────────────────── */
-  var SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbyJSEQaHzi_MBSBMXRqUaxqS-VzEEAQDbkh5BK25IZSCRAp3LGjnv6_23rH1eu7ud8p3A/exec';
+  var SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzvL9a0gBYEB8NG_Vz5MtzU64oQjA5mgf9kZSLnHjMCuYFvxR268Nr3Yq1IgfG8-GN8Zg/exec';
   var SHOW_DELAY   = 1000; // ms before popup appears
   var DISMISS_DAYS = 7;    // days to wait before re-showing after "No thanks"
 
