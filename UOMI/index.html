@@ -28,10 +28,10 @@
       <div class="container nav">
         <a href="index.html" class="brand">UOMI</a>
         <nav>
-          <a href="index.html">Home</a>
-          <a href="shop.html">Shop</a>
-          <a href="about.html">About</a>
-          <a href="contact.html">Contact</a>
+          <a href="index.html" data-i18n="nav.home">Home</a>
+          <a href="shop.html"  data-i18n="nav.shop">Shop</a>
+          <a href="about.html" data-i18n="nav.about">About</a>
+          <a href="contact.html" data-i18n="nav.contact">Contact</a>
         </nav>
       </div>
     </header>
@@ -39,16 +39,16 @@
     <main>
       <section class="hero">
         <div class="container hero-content">
-          <p class="kicker">UOMI Ceramic Art</p>
-          <h1 class="hero-title">
+          <p class="kicker" data-i18n="index.kicker">UOMI Ceramic Art</p>
+          <h1 class="hero-title" data-i18n-html="index.h1">
             Clay that moves,<br />
             souls that dance.
           </h1>
-          <p class="hero-lead">
+          <p class="hero-lead" data-i18n-html="index.lead">
             Handcrafted ceramics to wear, display, and live with.<br />
             Each one unrepeatable and unique.
           </p>
-          <a class="cta" href="shop.html">View collection</a>
+          <a class="cta" href="shop.html" data-i18n="index.cta">View collection</a>
         </div>
       </section>
 
@@ -59,18 +59,19 @@
           aria-hidden="true"
         ></div>
         <div class="section-title-row">
-          <h2>Welcome to U<span class="welcome-uomi-o">O</span>MI</h2>
-          <p>Browse Home, Shop, About and Contact.</p>
+          <h2><span data-i18n="index.welcome-pre">Welcome to U</span><span class="welcome-uomi-o">O</span><span data-i18n="index.welcome-post">MI</span></h2>
+          <p data-i18n="index.welcome-sub">Browse Home, Shop, About and Contact.</p>
         </div>
       </section>
     </main>
 
     <footer class="footer">
       <div class="container">
-        <p>&copy; <span id="year"></span> UOMI. All rights reserved.</p>
+        <p data-i18n-html="footer.rights">&copy; <span id="year"></span> UOMI. All rights reserved.</p>
       </div>
     </footer>
 
+    <script src="i18n.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

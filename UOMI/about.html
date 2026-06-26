@@ -21,10 +21,10 @@
       <div class="container nav">
         <a href="index.html" class="brand">UOMI</a>
         <nav>
-          <a href="index.html">Home</a>
-          <a href="shop.html">Shop</a>
-          <a href="about.html">About</a>
-          <a href="contact.html">Contact</a>
+          <a href="index.html"   data-i18n="nav.home">Home</a>
+          <a href="shop.html"    data-i18n="nav.shop">Shop</a>
+          <a href="about.html"   data-i18n="nav.about">About</a>
+          <a href="contact.html" data-i18n="nav.contact">Contact</a>
         </nav>
       </div>
     </header>
@@ -86,21 +86,21 @@
                           stroke-linecap="round" stroke-linejoin="round" />
               </g>
             </svg>
-            <p class="about-anim-hint">Scroll down</p>
+            <p class="about-anim-hint" data-i18n="about.scroll">Scroll down</p>
           </div>
         </div>
       </section>
 
       <section class="about section">
         <div class="container about-wrap">
-          <h2>About UOMI</h2>
-          <p class="about-intro">Created by a small man with big hands.</p>
-          <p class="about-prose">
+          <h2 data-i18n="about.title">About UOMI</h2>
+          <p class="about-intro" data-i18n="about.intro">Created by a small man with big hands.</p>
+          <p class="about-prose" data-i18n="about.prose1">
             UOMI is a ceramic art studio. Every piece — wall compositions,
             wearable objects, collectibles — is made by hand, in small batches,
             with full attention to texture and detail.
           </p>
-          <p class="about-prose">
+          <p class="about-prose" data-i18n="about.prose2">
             The process blends hand shaping and glaze formulation with something
             less tangible: the attempt to hold a feeling still, to give movement
             a shape, to make something that feels as alive as the hands that made
@@ -112,10 +112,11 @@
 
     <footer class="footer">
       <div class="container">
-        <p>&copy; <span id="year"></span> UOMI. All rights reserved.</p>
+        <p data-i18n-html="footer.rights">&copy; <span id="year"></span> UOMI. All rights reserved.</p>
       </div>
     </footer>
 
+    <script src="i18n.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

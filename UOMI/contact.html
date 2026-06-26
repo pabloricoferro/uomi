@@ -47,19 +47,19 @@
       <div class="container nav">
         <a href="index.html" class="brand">UOMI</a>
         <nav>
-          <a href="index.html">Home</a>
-          <a href="shop.html">Shop</a>
-          <a href="about.html">About</a>
-          <a href="contact.html">Contact</a>
+          <a href="index.html"   data-i18n="nav.home">Home</a>
+          <a href="shop.html"    data-i18n="nav.shop">Shop</a>
+          <a href="about.html"   data-i18n="nav.about">About</a>
+          <a href="contact.html" data-i18n="nav.contact">Contact</a>
         </nav>
       </div>
     </header>
 
     <main>
       <section class="contact-card">
-        <h2>Contact &amp; Custom Orders</h2>
+        <h2 data-i18n="contact.title">Contact &amp; Custom Orders</h2>
         <p>
-          Reach out on Instagram
+          <span data-i18n="contact.text">Reach out on Instagram</span>
           <a href="https://www.instagram.com/uomi.art" target="_blank" rel="noopener">@uomi.art</a>.
         </p>
       </section>
@@ -67,10 +67,11 @@
 
     <footer class="footer">
       <div class="container">
-        <p>&copy; <span id="year"></span> UOMI. All rights reserved.</p>
+        <p data-i18n-html="footer.rights">&copy; <span id="year"></span> UOMI. All rights reserved.</p>
       </div>
     </footer>
 
+    <script src="i18n.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

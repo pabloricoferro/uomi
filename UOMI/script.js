@@ -1293,6 +1293,11 @@ if (yearEl) {
     'Uzbekistan','Vanuatu','Venezuela','Vietnam','Yemen','Zambia','Zimbabwe'
   ];
 
+  /* ── i18n helper ────────────────────────────────────────────────────── */
+  function nt(key, fallback) {
+    return window.UOMI_I18N ? window.UOMI_I18N.t(key) : fallback;
+  }
+
   /* ── DOM references (set after createPopup) ─────────────────────────── */
   var overlay, emailInput, nameInput, countrySelect, dobInput, sexSelect,
       submitBtn, statusEl, waveArm;
@@ -1327,34 +1332,34 @@ if (yearEl) {
             '</g>' +
           '</svg>' +
         '</div>' +
-        '<h2 id="nl-title">Stay in the loop</h2>' +
-        '<p>Be the first to know about new pieces and studio news.</p>' +
+        '<h2 id="nl-title">' + nt('nl.title', 'Stay in the loop') + '</h2>' +
+        '<p>' + nt('nl.sub', 'Be the first to know about new pieces and studio news.') + '</p>' +
         '<form id="nl-form" novalidate>' +
           '<div class="nl-row">' +
-            '<input type="email" id="nl-email" placeholder="Email *"' +
+            '<input type="email" id="nl-email" placeholder="' + nt('nl.email', 'Email *') + '"' +
               ' required autocomplete="email"/>' +
-            '<input type="text" id="nl-name" placeholder="Name *"' +
+            '<input type="text" id="nl-name" placeholder="' + nt('nl.name', 'Name *') + '"' +
               ' required autocomplete="name"/>' +
           '</div>' +
           '<select id="nl-country" required>' +
-            '<option value="" disabled selected>Country *</option>' +
+            '<option value="" disabled selected>' + nt('nl.country', 'Country *') + '</option>' +
             countryOpts +
           '</select>' +
           '<div class="nl-field">' +
-            '<label for="nl-dob" class="nl-label">Date of Birth *</label>' +
+            '<label for="nl-dob" class="nl-label">' + nt('nl.dob', 'Date of Birth *') + '</label>' +
             '<input type="date" id="nl-dob" required/>' +
           '</div>' +
           '<select id="nl-sex" required>' +
-            '<option value="" disabled selected>Sex *</option>' +
-            '<option value="Male">Male</option>' +
-            '<option value="Female">Female</option>' +
-            '<option value="Special">Special</option>' +
-            '<option value="Rather not say">I\'d rather not say</option>' +
+            '<option value="" disabled selected>' + nt('nl.sex', 'Sex *') + '</option>' +
+            '<option value="Male">' + nt('nl.sex.male', 'Male') + '</option>' +
+            '<option value="Female">' + nt('nl.sex.female', 'Female') + '</option>' +
+            '<option value="Special">' + nt('nl.sex.special', 'Special') + '</option>' +
+            '<option value="Rather not say">' + nt('nl.sex.rather', "I'd rather not say") + '</option>' +
           '</select>' +
-          '<button type="submit" id="nl-submit">Subscribe</button>' +
+          '<button type="submit" id="nl-submit">' + nt('nl.submit', 'Subscribe') + '</button>' +
         '</form>' +
         '<p id="nl-status" role="status" aria-live="polite"></p>' +
-        '<button id="nl-skip">No thanks</button>' +
+        '<button id="nl-skip">' + nt('nl.skip', 'No thanks') + '</button>' +
       '</div>';
 
     document.body.appendChild(overlay);
@@ -1443,39 +1448,39 @@ if (yearEl) {
     var sex     = sexSelect.value;
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setStatus('Please enter a valid email address.', 'nl-error');
+      setStatus(nt('nl.err.email', 'Please enter a valid email address.'), 'nl-error');
       emailInput.focus();
       return;
     }
     if (!name) {
-      setStatus('Please enter your name.', 'nl-error');
+      setStatus(nt('nl.err.name', 'Please enter your name.'), 'nl-error');
       nameInput.focus();
       return;
     }
     if (!country) {
-      setStatus('Please select your country.', 'nl-error');
+      setStatus(nt('nl.err.country', 'Please select your country.'), 'nl-error');
       countrySelect.focus();
       return;
     }
     if (!dob) {
-      setStatus('Please enter your date of birth.', 'nl-error');
+      setStatus(nt('nl.err.dob', 'Please enter your date of birth.'), 'nl-error');
       dobInput.focus();
       return;
     }
     if (!sex) {
-      setStatus('Please select an option for sex.', 'nl-error');
+      setStatus(nt('nl.err.sex', 'Please select an option for sex.'), 'nl-error');
       sexSelect.focus();
       return;
     }
 
     if (isEmailSubscribed(email)) {
-      setStatus('This email is already subscribed.', 'nl-info');
+      setStatus(nt('nl.duplicate', 'This email is already subscribed.'), 'nl-info');
       window.setTimeout(function() { dismiss(false); }, 2500);
       return;
     }
 
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Subscribing\u2026';
+    submitBtn.textContent = nt('nl.submitting', 'Subscribing\u2026');
     setStatus('');
 
     if (!SCRIPT_URL) {
@@ -1510,8 +1515,8 @@ if (yearEl) {
       cleanup();
       markEmailSubscribed(email);
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Subscribe';
-      setStatus('Thank you for subscribing!', 'nl-success');
+      submitBtn.textContent = nt('nl.submit', 'Subscribe');
+      setStatus(nt('nl.success', 'Thank you for subscribing!'), 'nl-success');
       window.setTimeout(function() { dismiss(true); }, 2000);
     }
 
@@ -1520,8 +1525,8 @@ if (yearEl) {
       done = true;
       cleanup();
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Subscribe';
-      setStatus(msg || 'Connection error. Please try again.', 'nl-error');
+      submitBtn.textContent = nt('nl.submit', 'Subscribe');
+      setStatus(msg || nt('nl.err.connection', 'Connection error. Please try again.'), 'nl-error');
     }
 
     window[cbName] = function(data) {
@@ -1529,7 +1534,7 @@ if (yearEl) {
       if (data.status === 'duplicate') {
         done = true;
         cleanup();
-        setStatus('This email is already subscribed.', 'nl-info');
+        setStatus(nt('nl.duplicate', 'This email is already subscribed.'), 'nl-info');
         window.setTimeout(function() { dismiss(false); }, 2500);
         return;
       }
@@ -1538,7 +1543,7 @@ if (yearEl) {
 
     tag.src    = SCRIPT_URL + '?' + qs;
     tag.onerror = function() { onError(); };
-    timer = window.setTimeout(function() { onError('Request timed out. Please try again.'); }, 10000);
+    timer = window.setTimeout(function() { onError(nt('nl.err.timeout', 'Request timed out. Please try again.')); }, 10000);
     document.head.appendChild(tag);
   }
 
@@ -1560,9 +1565,10 @@ if (yearEl) {
 
   grid.className = "shop-grid";
   grid.innerHTML = prods.map(function (p) {
+    var i18n   = window.UOMI_I18N;
     var buyBtn = p.available
-      ? '<a class="btn-buy-now" href="' + p.stripeLink + '" target="_blank" rel="noopener noreferrer">Buy Now</a>'
-      : '<span class="sold-label">Sold</span>';
+      ? '<a class="btn-buy-now" href="' + p.stripeLink + '" target="_blank" rel="noopener noreferrer" data-i18n="shop.buy">' + (i18n ? i18n.t('shop.buy') : 'Buy Now') + '</a>'
+      : '<span class="sold-label" data-i18n="shop.sold">' + (i18n ? i18n.t('shop.sold') : 'Sold') + '</span>';
 
     return '<article class="shop-card">'
       + '<div class="shop-card-img">'
