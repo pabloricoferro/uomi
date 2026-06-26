@@ -134,8 +134,8 @@
       'nav.contact': 'Contacto',
 
       'index.kicker':       'UOMI Arte Cer\u00e1mica',
-      'index.h1':           'Arcilla que se mueve,<br />almas que danzan.',
-      'index.lead':         'Cer\u00e1micas artesanales para usar, exhibir y convivir.<br />Cada una irrepetible y \u00fanica.',
+      'index.h1':           'Arcilla que se mueve,<br />almas que bailan.',
+      'index.lead':         'Cer\u00e1mica artesanal para usar, exhibir y convivir.<br />Cada una irrepetible y \u00fanica',
       'index.cta':          'Ver colecci\u00f3n',
       'index.welcome-pre':  'Bienvenido a U',
       'index.welcome-post': 'MI',
@@ -149,7 +149,7 @@
 
       'about.scroll':  'Desl\u00edzate hacia abajo',
       'about.title':   'Sobre UOMI',
-      'about.intro':   'Creado por un hombre peque\u00f1o con grandes manos.',
+      'about.intro':   'Creado por un hombre peque\u00f1o con manos grandes.',
       'about.prose1':  'UOMI es un estudio de arte cer\u00e1mica. Cada pieza \u2014 composiciones de pared, objetos para usar, coleccionables \u2014 est\u00e1 hecha a mano, en peque\u00f1os lotes, con total atenci\u00f3n a la textura y el detalle.',
       'about.prose2':  'El proceso combina el modelado a mano y la formulaci\u00f3n de esmaltes con algo menos tangible: el intento de detener un sentimiento, de darle forma al movimiento, de crear algo que se sienta tan vivo como las manos que lo hicieron. Un trabajo lento en la realidad m\u00e1s r\u00e1pida que hemos vivido.',
 
