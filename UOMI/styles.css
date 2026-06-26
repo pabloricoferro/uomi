@@ -729,6 +729,26 @@ h1 {
   text-transform: uppercase;
 }
 
+.success-card {
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: center;
+  padding-top: 48px;
+  padding-bottom: 48px;
+}
+
+.success-card h2 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.6rem, 4vw, 2rem);
+  margin-bottom: 14px;
+}
+
+.success-card p {
+  color: var(--muted);
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
 
 @media (max-width: 800px) {
   .shop-grid { grid-template-columns: repeat(2, 1fr); }

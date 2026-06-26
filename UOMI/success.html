@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UOMI | Order confirmed</title>
+    <meta name="description" content="Your UOMI order was confirmed." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="success-page">
+    <header class="topbar">
+      <div class="container nav">
+        <a href="index.html" class="brand">UOMI</a>
+        <nav>
+          <a href="index.html"   data-i18n="nav.home">Home</a>
+          <a href="shop.html"    data-i18n="nav.shop">Shop</a>
+          <a href="about.html"   data-i18n="nav.about">About</a>
+          <a href="contact.html" data-i18n="nav.contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="container section success-card">
+        <h2 data-i18n="success.title">Thank you for your order</h2>
+        <p data-i18n="success.sub">Your payment was received. We will be in touch about shipping soon.</p>
+        <a class="cta" href="shop.html" data-i18n="success.back">Back to shop</a>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p data-i18n-html="footer.rights">&copy; <span id="year"></span> UOMI. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="i18n.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

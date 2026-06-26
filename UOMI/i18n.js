@@ -31,6 +31,11 @@
       'shop.sold':   'Sold',
       'shop.footer': '&copy; {year} UOMI. All rights reserved. &middot; Payments by Stripe.',
 
+      /* Payment success */
+      'success.title': 'Thank you for your order',
+      'success.sub':   'Your payment was received. We will be in touch about shipping soon.',
+      'success.back':  'Back to shop',
+
       /* About */
       'about.scroll':  'Scroll down',
       'about.title':   'About UOMI',
@@ -91,6 +96,10 @@
       'shop.sold':   'Esaurito',
       'shop.footer': '&copy; {year} UOMI. Tutti i diritti riservati. &middot; Pagamenti tramite Stripe.',
 
+      'success.title': 'Grazie per il tuo ordine',
+      'success.sub':   'Il pagamento \u00e8 stato ricevuto. Ti contatteremo presto per la spedizione.',
+      'success.back':  'Torna al negozio',
+
       'about.scroll':  'Scorri in basso',
       'about.title':   'Chi siamo',
       'about.intro':   'Creato da un uomo piccolo con grandi mani.',
@@ -146,6 +155,10 @@
       'shop.buy':    'Comprar',
       'shop.sold':   'Vendido',
       'shop.footer': '&copy; {year} UOMI. Todos los derechos reservados. &middot; Pagos por Stripe.',
+
+      'success.title': 'Gracias por tu pedido',
+      'success.sub':   'Recibimos tu pago. Pronto nos pondremos en contacto sobre el env\u00edo.',
+      'success.back':  'Volver a la tienda',
 
       'about.scroll':  'Desl\u00edzate hacia abajo',
       'about.title':   'Sobre UOMI',

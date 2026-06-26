@@ -1566,8 +1566,11 @@ if (yearEl) {
   grid.className = "shop-grid";
   grid.innerHTML = prods.map(function (p) {
     var i18n   = window.UOMI_I18N;
+    var link   = p.stripeLink
+      + (p.stripeLink.indexOf('?') === -1 ? '?' : '&')
+      + 'client_reference_id=' + encodeURIComponent(p.id);
     var buyBtn = p.available
-      ? '<a class="btn-buy-now" href="' + p.stripeLink + '" target="_blank" rel="noopener noreferrer" data-i18n="shop.buy">' + (i18n ? i18n.t('shop.buy') : 'Buy Now') + '</a>'
+      ? '<a class="btn-buy-now" href="' + link + '" rel="noopener noreferrer" data-i18n="shop.buy">' + (i18n ? i18n.t('shop.buy') : 'Buy Now') + '</a>'
       : '<span class="sold-label" data-i18n="shop.sold">' + (i18n ? i18n.t('shop.sold') : 'Sold') + '</span>';
 
     return '<article class="shop-card">'
@@ -1585,4 +1588,8 @@ if (yearEl) {
       + '</div>'
     + '</article>';
   }).join("");
+
+  if (window.UOMI_I18N && window.UOMI_I18N.apply) {
+    window.UOMI_I18N.apply();
+  }
 })();

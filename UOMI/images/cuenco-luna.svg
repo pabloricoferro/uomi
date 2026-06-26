@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 460" fill="none">
+  <defs>
+    <linearGradient id="jr-body" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#6a3418"/>
+      <stop offset="28%"  stop-color="#c87848"/>
+      <stop offset="65%"  stop-color="#b86838"/>
+      <stop offset="100%" stop-color="#7a4020"/>
+    </linearGradient>
+    <linearGradient id="jr-neck" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#7a4020"/>
+      <stop offset="50%"  stop-color="#d08850"/>
+      <stop offset="100%" stop-color="#8a4828"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="200" cy="432" rx="72" ry="18" fill="#2c1a0e" opacity="0.11"/>
+  <path d="M158 388 C153 365 146 340 143 308 C138 265 136 222 140 192 C143 168 147 153 155 141 C163 129 174 122 185 120 C193 118 207 118 215 120 C226 122 237 129 244 141 C252 155 256 172 258 200 C261 232 258 270 254 308 C250 340 244 365 240 388 Z"
+        fill="url(#jr-body)" stroke="#5a2810" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M185 120 C184 104 188 90 200 84 C212 90 216 104 215 120"
+        fill="url(#jr-neck)" stroke="#5a2810" stroke-width="1.5" stroke-linejoin="round"/>
+  <ellipse cx="200" cy="84" rx="20" ry="8" fill="#c88050" stroke="#5a2810" stroke-width="1.5"/>
+  <path d="M172 165 C169 212 168 262 172 310" stroke="white" stroke-width="10" fill="none" opacity="0.07" stroke-linecap="round"/>
+  <path d="M166 200 C171 188 174 212 168 230 C164 248 170 265 165 282" stroke="#5a2810" stroke-width="1.1" fill="none" opacity="0.38" stroke-linecap="round"/>
+  <path d="M224 185 C231 202 228 222 233 240 C238 260 231 278 235 295" stroke="#5a2810" stroke-width="1.1" fill="none" opacity="0.32" stroke-linecap="round"/>
+  <path d="M185 310 C187 332 184 352 187 372" stroke="#5a2810" stroke-width="0.9" fill="none" opacity="0.28" stroke-linecap="round"/>
+  <path d="M212 305 C216 328 213 350 216 370" stroke="#5a2810" stroke-width="0.9" fill="none" opacity="0.28" stroke-linecap="round"/>
+  <path d="M145 258 Q200 266 255 258" stroke="#5a2810" stroke-width="0.9" fill="none" opacity="0.22"/>
+  <path d="M142 295 Q200 304 258 295" stroke="#5a2810" stroke-width="0.9" fill="none" opacity="0.18"/>
+  <path d="M150 335 Q200 344 250 335" stroke="#5a2810" stroke-width="0.9" fill="none" opacity="0.15"/>
+</svg>

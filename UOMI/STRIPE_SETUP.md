@@ -42,10 +42,22 @@ Replace the placeholder Stripe links with your real ones:
 
 **Test Mode (Free Testing):**
 
-1. Toggle to "Test mode" in Stripe Dashboard (top right)
-2. Create test payment links
+1. Toggle to **Test mode** in Stripe Dashboard (top right — must show orange "Test mode" badge)
+2. Create test payment links (URLs contain `/test_`)
 3. Use test credit card: `4242 4242 4242 4242`
 4. Any future expiry date, any CVC
+5. View test payments at: [dashboard.stripe.com/test/payments](https://dashboard.stripe.com/test/payments)
+
+**Configure redirect after payment (recommended):**
+
+After a successful test or live payment, send buyers back to your site:
+
+1. Stripe Dashboard → **Payment Links** → open each link → **After payment**
+2. Choose **Don't show confirmation page**
+3. Set redirect URL to your success page, for example:
+   - `https://www.uomi.art/success.html`
+   - or `https://pabloricoferro.github.io/uomi/success.html`
+4. Save and redeploy the link if Stripe asks you to
 
 **Live Mode:**
 
@@ -118,6 +130,25 @@ Or handle shipping manually after each sale.
 - Get email notifications for each sale
 - Export orders to CSV for record-keeping
 - Mark items as "Sold" in `products.js` manually
+
+## Troubleshooting
+
+### I completed a test payment but don't see it in Stripe
+
+- Confirm **Test mode** is ON in the Dashboard (orange badge, top right). Live-mode payments and test-mode payments are separate lists.
+- Open [dashboard.stripe.com/test/payments](https://dashboard.stripe.com/test/payments) directly.
+- Use card `4242 4242 4242 4242` only — real cards fail in test mode.
+- If checkout shows an error, try **Card** as the payment method (not Klarna, Satispay, etc.).
+
+### "Buy Now" opens Stripe but checkout fails
+
+- The Payment Link must be **active** in Dashboard → Payment Links.
+- The link URL in `products.js` must match exactly the link copied from Stripe (including `/test_` in test mode).
+- If you recreated a link in Stripe, update `stripeLink` in `products.js` and push to GitHub.
+
+### Payment succeeds but I land on stripe.com
+
+- Set **After payment → Redirect** on each Payment Link to `success.html` on your site (see step 4 above).
 
 ## Support
 
