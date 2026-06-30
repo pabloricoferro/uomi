@@ -9,7 +9,8 @@
 //   priceEUR    — price as a number (€)
 //   image       — path relative to site root
 //   alt         — image alt text for accessibility
-//   stripeLink  — Stripe Payment Link (get from Stripe Dashboard → Payment Links)
+//   stripeLink  — Stripe Payment Link (LIVE: no "test_" in URL). The price charged
+//                 is set in Stripe, not here — keep title/priceEUR in sync with Stripe.
 //   available   — true = in stock, false = sold
 
 window.PRODUCTS = [
@@ -21,7 +22,7 @@ window.PRODUCTS = [
     priceEUR:    45,
     image:       "./images/cuenco-luna.svg",
     alt:         "Cuenco Luna — handmade ceramic bowl with moon glaze",
-    stripeLink:  "https://buy.stripe.com/test_7sYeVfdqu60BfJ85D3fw400",
+    stripeLink:  "https://buy.stripe.com/6oUaEXdBo89gahU9qA0RG02",
     available:   true,
   },
   {
@@ -32,7 +33,7 @@ window.PRODUCTS = [
     priceEUR:    85,
     image:       "./images/jarron-raiz.svg",
     alt:         "Jarrón Raíz — decorative ceramic vase with root textures",
-    stripeLink:  "https://buy.stripe.com/test_5kQ14p2LQ3St9kK7Lbfw401",
+    stripeLink:  "https://buy.stripe.com/fZufZhcxkexE9dQcCM0RG01",
     available:   true,
   },
   {
@@ -43,12 +44,17 @@ window.PRODUCTS = [
     priceEUR:    32,
     image:       "./images/plato-tierra.svg",
     alt:         "Plato Tierra — textured ceramic plate with concentric rings",
-    stripeLink:  "https://buy.stripe.com/test_8x2aEZcmqbkV68yfdDfw402",
+    stripeLink:  "https://buy.stripe.com/4gM7sLeFsexEgGi5ak0RG00",
     available:   true,
   },
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════
+// HOW TO CHANGE NAME OR PRICE
+// Update BOTH places so the shop card matches what Stripe charges:
+//   1. Stripe Dashboard → Payment Links → edit the link (or create a new one)
+//   2. products.js → title, priceEUR, stripeLink (if you created a new link)
+//
 // HOW TO ADD A NEW PRODUCT
 // 1. Copy one block above and fill in all fields
 // 2. Add the product image to the /images/ folder
