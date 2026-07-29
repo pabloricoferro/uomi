@@ -26,7 +26,6 @@
 
       /* Shop */
       'shop.title':  'Collection',
-      'shop.sub':    'Three pieces. Each one unrepeatable.',
       'shop.buy':    'Buy Now',
       'shop.sold':   'Sold',
       'shop.footer': '&copy; {year} UOMI. All rights reserved. &middot; Payments by Stripe.',
@@ -91,7 +90,6 @@
       'index.welcome-sub':  'Esplora Home, Negozio, Chi siamo e Contatto.',
 
       'shop.title':  'Collezione',
-      'shop.sub':    'Tre pezzi. Ognuno irripetibile.',
       'shop.buy':    'Acquista ora',
       'shop.sold':   'Esaurito',
       'shop.footer': '&copy; {year} UOMI. Tutti i diritti riservati. &middot; Pagamenti tramite Stripe.',
@@ -151,7 +149,6 @@
       'index.welcome-sub':  'Explora Inicio, Tienda, Nosotros y Contacto.',
 
       'shop.title':  'Colecci\u00f3n',
-      'shop.sub':    'Tres piezas. Cada una irrepetible.',
       'shop.buy':    'Comprar',
       'shop.sold':   'Vendido',
       'shop.footer': '&copy; {year} UOMI. Todos los derechos reservados. &middot; Pagos por Stripe.',
