@@ -7,8 +7,8 @@ The newsletter popup is fully built. It shows on every page 2.5 seconds after lo
 ## Step 1 — Create the Google Sheet
 
 1. Go to [sheets.google.com](https://sheets.google.com) and create a new blank spreadsheet.
-2. Name it **UOMI Newsletter**.
-3. In row 1, add these headers:
+2. Name the file **UOMI**.
+3. Rename the first tab to **Newsletter** and add these headers in row 1:
 
 | A | B | C | D | E |
 |---|---|---|---|---|
@@ -18,6 +18,14 @@ The newsletter popup is fully built. It shows on every page 2.5 seconds after lo
 
 
 Leave all other rows empty — the script will fill them automatically.
+
+4. Add a second tab named **Orders** with these headers in row 1:
+
+| A | B | C | D | E | F | G | H |
+|---|---|---|---|---|---|---|---|
+| Date | Order ID | Client | Email | Product | Total | Currency | Delivery address |
+
+(The script writes to tabs **by name**, so renaming the file or reordering tabs never breaks it.)
 
 ---
 
@@ -29,12 +37,27 @@ Leave all other rows empty — the script will fill them automatically.
 ```javascript
 var SPREADSHEET_ID = '1kijPBOhZoxQ-u-Dl1rNa6X-_GuTmvZrLR5eOavtk2sY';
 
+function tab(name) {
+  return SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(name);
+}
+
 function doGet(e) {
   e = e || {};
   var p  = e.parameter || {};
   var cb = p.callback  || 'callback';
 
   try {
+    // Shop page asks which pieces are sold (product ids found in Orders, column E)
+    if (p.action === 'sold') {
+      var o = tab('Orders'), n = o.getLastRow(), ids = [];
+      if (n >= 2) {
+        ids = o.getRange(2, 5, n - 1, 1).getValues()
+          .map(function (r) { return String(r[0]).trim(); })
+          .filter(Boolean);
+      }
+      return jsonp(cb, {sold: ids});
+    }
+
     var email   = (p.email   || '').toLowerCase().trim();
     var name    = (p.name    || '').trim();
     var country = (p.country || '').trim();
@@ -47,7 +70,7 @@ function doGet(e) {
       return jsonp(cb, {status: 'error', msg: 'No email'});
     }
 
-    var sheet   = SpreadsheetApp.openById(SPREADSHEET_ID).getActiveSheet();
+    var sheet   = tab('Newsletter');
     var lastRow = sheet.getLastRow();
 
     if (lastRow >= 2) {
@@ -77,9 +100,44 @@ function jsonp(callback, data) {
     .setMimeType(ContentService.MimeType.JAVASCRIPT);
 }
 
+// ── Orders: Stripe webhook (checkout.session.completed) → tab "Orders" ──
+function doPost(e) {
+  try {
+    var evt = JSON.parse(e.postData.contents);
+    if (evt.type !== 'checkout.session.completed') return ContentService.createTextOutput('ignored');
+    var s     = evt.data.object;
+    var sheet = tab('Orders');
+    var id    = s.id;
+
+    // Stripe may retry: skip if this order is already logged
+    var last = sheet.getLastRow();
+    if (last >= 2) {
+      var ids = sheet.getRange(2, 2, last - 1, 1).getValues();
+      for (var i = 0; i < ids.length; i++) {
+        if (ids[i][0] === id) return ContentService.createTextOutput('duplicate');
+      }
+    }
+
+    var cd   = s.customer_details || {};
+    var addr = (s.shipping_details && s.shipping_details.address) || cd.address || {};
+    var addrText = [addr.line1, addr.line2, addr.postal_code, addr.city, addr.state, addr.country]
+      .filter(Boolean).join(', ');
+    var product = (s.metadata && s.metadata.product) || s.client_reference_id || '';
+
+    sheet.appendRow([
+      new Date(s.created * 1000), id, cd.name || '', cd.email || '',
+      product, s.amount_total / 100, (s.currency || '').toUpperCase(), addrText
+    ]);
+    return ContentService.createTextOutput('ok');
+  } catch (err) {
+    Logger.log('ORDER ERROR: ' + err);
+    return ContentService.createTextOutput('error');
+  }
+}
+
 // ── Select testWrite in dropdown → Run (NOT doGet) ──
 function testWrite() {
-  var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getActiveSheet();
+  var sheet = tab('Newsletter');
   sheet.appendRow(['test2@uomi.art', 'Test User', 'Spain', 'Male', '1990-01-01']);
   Logger.log('testWrite OK');
 }
@@ -102,6 +160,20 @@ function testWrite() {
    ```
    https://script.google.com/macros/s/AKfycb.../exec
    ```
+
+---
+
+## Step 3b — Log orders in the "Orders" tab (Stripe webhook)
+
+1. Stripe Dashboard → **Developers → Webhooks → Add endpoint**.
+2. **Endpoint URL**: the same Web App URL from Step 3 (`.../exec`).
+3. **Events**: select only `checkout.session.completed`.
+4. Save. Every paid order now adds a row to **Orders**.
+
+Notes:
+- Apps Script answers POSTs with a redirect, so Stripe may show the delivery as "failed" even though the row is written. The script ignores repeated deliveries of the same order, so no duplicates appear.
+- **Producto** is empty unless the Payment Link carries it. In each Payment Link, set a *client reference* / metadata `product` (e.g. "Cuenco Luna").
+- Redeploy after changing the script (Deploy → Manage deployments → New version).
 
 ---
 
@@ -148,7 +220,7 @@ You should see `ok` on the page and a new row in the sheet.
 
 ## Downloading the Email List as Excel
 
-1. Open the **UOMI Newsletter** Google Sheet.
+1. Open the **UOMI** Google Sheet (tab **Newsletter**).
 2. Go to **File → Download → Microsoft Excel (.xlsx)**.
 
 ---

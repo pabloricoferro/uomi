@@ -1,3 +1,25 @@
+/* ═══ Tipografía UOMI (Designs/Alfabeto → fonts/uomi.otf) ═══ */
+@font-face {
+  font-family: "UOMI";
+  src: url("fonts/uomi.otf?v=3") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* La fuente tiene un solo grosor: sin negrita/cursiva sintéticas (se verían manchadas) */
+html {
+  font-synthesis: none;
+  font-size: 112.5%;   /* la fuente UOMI tiene la x-height más baja que Inter: 18px base compensa */
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
 :root {
   --bg: #ffffff;
   --card: #ffffff;
@@ -16,7 +38,7 @@
 
 body {
   margin: 0;
-  font-family: Inter, Arial, sans-serif;
+  font-family: "UOMI", Arial, sans-serif;
   color: var(--text);
   background: var(--bg);
   line-height: 1.5;
@@ -183,18 +205,17 @@ body {
   z-index: 2;
 }
 
-/* Rellena el hueco interno de la O con negro (proporciones = O_HOLE: cx.50 cy.50 rx.28 ry.30) */
-.section-welcome .welcome-uomi-o::before {
-  content: '';
-  position: absolute;
-  top: 20%;
-  left: 22%;
-  right: 22%;
-  bottom: 20%;
-  background: currentColor;
+/* La O de «UOMI» es un óvalo negro macizo con las medidas de la O de la fuente UOMI
+   (397 × 697 de 1000 unidades). El texto "O" sigue en el HTML pero va oculto. */
+.section-welcome .welcome-uomi-o {
+  width: 0.397em;
+  height: 0.697em;
+  margin: 0 0.035em;
+  overflow: hidden;
+  white-space: nowrap;
+  text-indent: -100em;
+  background: var(--text);
   border-radius: 50%;
-  pointer-events: none;
-  z-index: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -249,13 +270,41 @@ main {
   gap: 16px;
 }
 
+/* Carrera de muñecos UOMI en la barra superior (ver topbarRace en script.js) */
+.runner-lane {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.runner-lane canvas {
+  display: block;
+}
+
 .brand {
   text-decoration: none;
   color: var(--text);
-  font-family: Inter, Arial, sans-serif;
+  font-family: "UOMI", Arial, sans-serif;
   font-size: 1.2rem;
   font-weight: 700;
   letter-spacing: 0.08em;
+}
+
+/* Logo UOMI (Designs/UOMI_logo.png): negro sobre blanco; "multiply" quita el fondo blanco */
+.brand {
+  display: inline-flex;
+  align-items: center;
+}
+
+.brand img {
+  display: block;
+  height: 30px;
+  width: auto;
+  mix-blend-mode: multiply;
 }
 
 nav {
@@ -291,14 +340,14 @@ nav a:hover {
   margin: 0 0 8px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-size: 0.78rem;
+  font-size: 0.94rem;
   color: #8f8f8f;
 }
 
 h1,
 h2,
 h3 {
-  font-family: Inter, Arial, sans-serif;
+  font-family: "UOMI", Arial, sans-serif;
   margin: 0;
 }
 
@@ -314,7 +363,7 @@ h1 {
 .hero-lead {
   margin: 0;
   color: var(--muted);
-  font-size: 1.06rem;
+  font-size: 1.27rem;
 }
 
 .cta {
@@ -386,13 +435,13 @@ h1 {
 }
 
 .card-body h3 {
-  font-size: 1.05rem;
+  font-size: 1.26rem;
   margin-bottom: 6px;
 }
 
 .card-body p {
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: 1.14rem;
   margin: 0 0 12px;
 }
 
@@ -418,7 +467,7 @@ h1 {
   -webkit-backdrop-filter: blur(6px);
   text-align: center;
   color: var(--muted);
-  font-size: 1rem;
+  font-size: 1.2rem;
 }
 
 .shop-empty p {
@@ -487,7 +536,7 @@ h1 {
   left: 50%;
   transform: translateX(-50%);
   margin: 0;
-  font-size: 0.78rem;
+  font-size: 0.94rem;
   color: var(--muted);
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -517,11 +566,15 @@ h1 {
 .contact p {
   color: var(--muted);
   margin-top: 10px;
+  font-size: 1.25rem;
+  line-height: 1.6;
 }
 
+/* Justificado, pero con la última línea alineada a la izquierda: con la fuente UOMI
+   (letras estrechas) justificar también la última línea abría huecos enormes. */
 .about-prose {
   text-align: justify;
-  text-align-last: justify;
+  text-align-last: left;
   hyphens: auto;
 }
 
@@ -563,12 +616,36 @@ h1 {
 .contact-card p {
   margin: 8px 0;
   color: var(--text);
-  font-size: 1.02rem;
+  font-size: 1.22rem;
 }
 
 .contact-card a {
   color: #111;
   font-weight: 600;
+}
+
+/* Móvil: tarjeta más pequeña y más translúcida para dejar ver el fondo */
+@media (max-width: 600px) {
+  .contact-page main {
+    padding: 24px 40px;
+  }
+
+  .contact-card {
+    max-width: 280px;
+    padding: 18px 18px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 14px;
+  }
+
+  .contact-card h2 {
+    font-size: 1.2rem;
+    margin-bottom: 6px;
+  }
+
+  .contact-card p {
+    margin: 4px 0;
+    font-size: 1.1rem;
+  }
 }
 
 .footer {
@@ -579,6 +656,26 @@ h1 {
 .footer p {
   margin: 0;
   color: var(--muted);
+}
+
+.nl-open-btn {
+  display: block;
+  margin: 0 0 14px;
+  padding: 10px 22px;
+  background: none;
+  border: 2px solid var(--text);            /* borde negro siempre visible */
+  border-radius: 999px;
+  color: var(--text);
+  font-family: "UOMI", Arial, sans-serif;
+  font-size: 1.08rem;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+
+/* al pasar el cursor el borde negro se engrosa (sin mover nada de sitio) */
+.nl-open-btn:hover,
+.nl-open-btn:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--text);
 }
 
 @media (max-width: 960px) {
@@ -658,6 +755,162 @@ h1 {
   transform: scale(1.04);
 }
 
+.shop-card-img {
+  position: relative;
+}
+
+.shop-card[hidden] {
+  display: none;
+}
+
+.shop-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 4px 0 18px;
+}
+
+.shop-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.shop-filters select {
+  min-width: 170px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text);
+  font-family: "UOMI", Arial, sans-serif;
+  font-size: 1.08rem;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
+.price-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 220px;
+}
+
+.price-filter-title {
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.price-values {
+  font-size: 1.08rem;
+  font-weight: 600;
+}
+
+.price-slider {
+  position: relative;
+  height: 28px;
+}
+
+.price-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 4px;
+  transform: translateY(-50%);
+  border-radius: 2px;
+  background: linear-gradient(to right,
+    var(--border) 0 var(--lo, 0%),
+    #111 var(--lo, 0%) var(--hi, 100%),
+    var(--border) var(--hi, 100%) 100%);
+}
+
+.price-slider input[type="range"] {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  top: 0;
+  height: 28px;
+  margin: 0;
+  background: none;
+  pointer-events: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.price-slider input[type="range"]::-webkit-slider-runnable-track { background: none; height: 28px; }
+.price-slider input[type="range"]::-moz-range-track { background: none; }
+
+.price-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  pointer-events: auto;
+  width: 18px;
+  height: 18px;
+  margin-top: 5px;
+  border-radius: 50%;
+  border: 2px solid #111;
+  background: #fff;
+  cursor: grab;
+}
+
+.price-slider input[type="range"]::-moz-range-thumb {
+  pointer-events: auto;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #111;
+  background: #fff;
+  cursor: grab;
+}
+
+.shop-empty-filter {
+  margin-top: 24px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.shop-card-img img[hidden] {
+  display: none;
+}
+
+.shop-img-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  color: #111;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: background 0.15s;
+}
+
+.shop-img-nav:hover { background: #fff; }
+.shop-img-nav.prev { left: 10px; }
+.shop-img-nav.next { right: 10px; }
+
+.shop-img-count {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+
 .shop-card-body {
   padding: 16px 18px 20px;
   display: flex;
@@ -666,7 +919,7 @@ h1 {
 }
 
 .shop-card-type {
-  font-size: 0.72rem;
+  font-size: 0.86rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -675,14 +928,14 @@ h1 {
 }
 
 .shop-card-body h3 {
-  font-size: 1.08rem;
+  font-size: 1.3rem;
   font-weight: 700;
   margin-bottom: 6px;
   letter-spacing: -0.01em;
 }
 
 .shop-card-desc {
-  font-size: 0.875rem;
+  font-size: 1.05rem;
   color: var(--muted);
   margin: 0 0 16px;
   line-height: 1.5;
@@ -710,7 +963,7 @@ h1 {
   color: #fff;
   border-radius: 999px;
   padding: 9px 18px;
-  font-size: 0.84rem;
+  font-size: 1.01rem;
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
@@ -722,7 +975,7 @@ h1 {
 }
 
 .sold-label {
-  font-size: 0.82rem;
+  font-size: 0.98rem;
   font-weight: 600;
   color: var(--muted);
   letter-spacing: 0.04em;
@@ -738,7 +991,7 @@ h1 {
 }
 
 .success-card h2 {
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: "UOMI", Arial, sans-serif;
   font-size: clamp(1.6rem, 4vw, 2rem);
   margin-bottom: 14px;
 }
@@ -843,7 +1096,7 @@ h1 {
 
 #nl-popup > p {
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 1.08rem;
   margin: 0 0 18px;
   line-height: 1.5;
 }
@@ -871,8 +1124,8 @@ h1 {
   padding: 11px 13px;
   border: 1.5px solid var(--border);
   border-radius: 10px;
-  font-size: 0.9rem;
-  font-family: Inter, Arial, sans-serif;
+  font-size: 1.08rem;
+  font-family: "UOMI", Arial, sans-serif;
   color: var(--text);
   background: #fff;
   outline: none;
@@ -915,7 +1168,7 @@ h1 {
 }
 
 .nl-label {
-  font-size: 0.77rem;
+  font-size: 0.92rem;
   font-weight: 500;
   color: var(--muted);
   letter-spacing: 0.03em;
@@ -933,9 +1186,9 @@ h1 {
   border: none;
   border-radius: 10px;
   padding: 12px 20px;
-  font-size: 0.94rem;
+  font-size: 1.13rem;
   font-weight: 600;
-  font-family: Inter, Arial, sans-serif;
+  font-family: "UOMI", Arial, sans-serif;
   cursor: pointer;
   transition: background 0.18s;
   letter-spacing: 0.01em;
@@ -954,7 +1207,7 @@ h1 {
 
 #nl-status {
   min-height: 1.25em;
-  font-size: 0.85rem;
+  font-size: 1.02rem;
   margin: 8px 0 0;
   text-align: center;
 }
@@ -967,8 +1220,8 @@ h1 {
   background: none;
   border: none;
   color: var(--muted);
-  font-size: 0.8rem;
-  font-family: Inter, Arial, sans-serif;
+  font-size: 0.96rem;
+  font-family: "UOMI", Arial, sans-serif;
   cursor: pointer;
   padding: 6px 10px;
   margin-top: 6px;
@@ -1005,8 +1258,8 @@ h1 {
   background: none;
   border: 1.5px solid var(--border);
   color: var(--muted);
-  font-family: Inter, Arial, sans-serif;
-  font-size: 0.72rem;
+  font-family: "UOMI", Arial, sans-serif;
+  font-size: 0.86rem;
   font-weight: 700;
   letter-spacing: 0.07em;
   padding: 5px 11px;
@@ -1057,8 +1310,8 @@ h1 {
   text-align: left;
   background: none;
   border: none;
-  font-family: Inter, Arial, sans-serif;
-  font-size: 0.875rem;
+  font-family: "UOMI", Arial, sans-serif;
+  font-size: 1.05rem;
   color: var(--muted);
   padding: 8px 13px;
   cursor: pointer;
@@ -1078,7 +1331,7 @@ h1 {
 
 @media (max-width: 600px) {
   .lang-btn {
-    font-size: 0.68rem;
+    font-size: 0.82rem;
     padding: 4px 9px;
   }
 }

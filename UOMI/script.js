@@ -1016,11 +1016,14 @@ if (yearEl) {
        ry = 0.38 → hole.bottom al 88 % de la altura del glyph, justo en el borde
        inferior interior de la O. Subir ry si la figura desaparece demasiado pronto;
        bajarlo si desaparece demasiado tarde. */
+    /* La «O» de la página es ahora un óvalo negro macizo (ver .welcome-uomi-o en styles.css):
+       el span mide exactamente el óvalo, así que la figura entra por su borde superior (5 %)
+       y desaparece al pasar su borde inferior (95 %). */
     const O_HOLE = {
       cx: 0.50,
       cy: 0.50,
-      rx: 0.28,
-      ry: 0.30,
+      rx: 0.50,
+      ry: 0.45,
     };
     O_HOLE.entryY = O_HOLE.cy - O_HOLE.ry;
     O_HOLE.exitY = O_HOLE.cy + O_HOLE.ry;
@@ -1077,6 +1080,7 @@ if (yearEl) {
       clearAll();
       cycleStart = performance.now();
       slot.style.clipPath = "none";
+      slot.style.opacity = "1";
       slot.style.visibility = "visible";
       applyFallFlailFrame(svg, FALL_FLAIL_SEQUENCE[0]);
 
@@ -1104,6 +1108,8 @@ if (yearEl) {
           const y = m.endY + m.enterDepth * u;
           applyFallFlailFrame(svg, FALL_FLAIL_SEQUENCE[fallFlailIndex(now - t1)]);
           slot.style.transform = `translate3d(0,${y}px,0)`;
+          // Se desvanece mientras se hunde en la O (sin brazos/piernas sueltos).
+          slot.style.opacity = String(Math.max(0, 1 - u * 1.15) ** 1.4);
           const oNow = oEl.getBoundingClientRect();
           const slotNow = slot.getBoundingClientRect();
           const hole = holeViewport(oNow);
@@ -1123,6 +1129,7 @@ if (yearEl) {
           }
           slot.style.clipPath = "none";
           slot.style.visibility = "hidden";
+          slot.style.opacity = "1";
           slot.style.transform = "";
           scheduleNextCycle();
         }
@@ -1257,7 +1264,7 @@ if (yearEl) {
 
   /* ── Guard: dismissed recently? ────────────────────────────────────── */
   var dismissedAt = parseInt(localStorage.getItem(LS_DISMISSED) || '0', 10);
-  if (dismissedAt && (Date.now() - dismissedAt) < DISMISS_DAYS * 86400000) return;
+  var recentlyDismissed = dismissedAt && (Date.now() - dismissedAt) < DISMISS_DAYS * 86400000;
 
   /* ── Country list ───────────────────────────────────────────────────── */
   var COUNTRIES = [
@@ -1384,6 +1391,7 @@ if (yearEl) {
 
   /* ── Show ───────────────────────────────────────────────────────────── */
   function show() {
+    if (overlay && overlay.parentNode) return; // already open
     createPopup();
     requestAnimationFrame(function() {
       requestAnimationFrame(function() {
@@ -1548,7 +1556,12 @@ if (yearEl) {
   }
 
   /* ── Kick off ───────────────────────────────────────────────────────── */
-  window.setTimeout(show, SHOW_DELAY);
+  if (!recentlyDismissed) window.setTimeout(show, SHOW_DELAY);
+
+  /* Footer "Subscribe" buttons open the same popup on demand */
+  document.querySelectorAll('[data-nl-open]').forEach(function(btn) {
+    btn.addEventListener('click', show);
+  });
 })();
 
 
@@ -1563,33 +1576,376 @@ if (yearEl) {
   var prods = window.PRODUCTS;
   if (!grid || !prods || !prods.length) return;
 
+  var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzNId42fLX8gY4pK3_wvCeUu1fP6POuOvXR4zdXK4_ry51x0NqxJuXnWjzBd60Cn4L5sg/exec";
+  var i18n = window.UOMI_I18N;
+  function tr(key, fallback) { return i18n ? i18n.t(key) : fallback; }
+
+  function soldHtml() {
+    return '<span class="sold-label" data-i18n="shop.sold">' + tr("shop.sold", "Sold") + "</span>";
+  }
+
+  function footerHtml(p, sold) {
+    if (sold) return soldHtml();
+    var buy = "";
+    if (p.stripeLink) {
+      var link = p.stripeLink
+        + (p.stripeLink.indexOf("?") === -1 ? "?" : "&")
+        + "client_reference_id=" + encodeURIComponent(p.id);
+      buy = '<a class="btn-buy-now" href="' + link + '" rel="noopener noreferrer" data-i18n="shop.buy">' + tr("shop.buy", "Buy Now") + "</a>";
+    }
+    return '<span class="shop-card-price">€' + p.priceEUR + "</span>" + buy;
+  }
+
   grid.className = "shop-grid";
   grid.innerHTML = prods.map(function (p) {
-    var i18n   = window.UOMI_I18N;
-    var link   = p.stripeLink
-      + (p.stripeLink.indexOf('?') === -1 ? '?' : '&')
-      + 'client_reference_id=' + encodeURIComponent(p.id);
-    var buyBtn = p.available
-      ? '<a class="btn-buy-now" href="' + link + '" rel="noopener noreferrer" data-i18n="shop.buy">' + (i18n ? i18n.t('shop.buy') : 'Buy Now') + '</a>'
-      : '<span class="sold-label" data-i18n="shop.sold">' + (i18n ? i18n.t('shop.sold') : 'Sold') + '</span>';
-
-    return '<article class="shop-card">'
-      + '<div class="shop-card-img">'
-        + '<img src="' + p.image + '" alt="' + p.alt + '" loading="lazy"/>'
-      + '</div>'
+    var imgs = p.images && p.images.length ? p.images : [];
+    var many = imgs.length > 1;
+    return '<article class="shop-card" data-id="' + p.id + '" data-type="' + p.type + '" data-price="' + p.priceEUR + '">'
+      + '<div class="shop-card-img" data-index="0">'
+        + imgs.map(function (src, i) {
+            return '<img src="' + src + '" alt="' + p.type + '" loading="lazy"' + (i === 0 ? "" : " hidden") + "/>";
+          }).join("")
+        + (many
+            ? '<button type="button" class="shop-img-nav prev" aria-label="Previous image">&#8249;</button>'
+            + '<button type="button" class="shop-img-nav next" aria-label="Next image">&#8250;</button>'
+            + '<span class="shop-img-count">1 / ' + imgs.length + "</span>"
+            : "")
+      + "</div>"
       + '<div class="shop-card-body">'
-        + '<p class="shop-card-type">' + p.type + '</p>'
-        + '<h3>' + p.title + '</h3>'
-        + '<p class="shop-card-desc">' + p.description + '</p>'
-        + '<div class="shop-card-footer">'
-          + '<span class="shop-card-price">\u20ac' + p.priceEUR + '</span>'
-          + buyBtn
-        + '</div>'
-      + '</div>'
-    + '</article>';
+        + '<p class="shop-card-type" data-i18n="type.' + p.type + '">' + tr("type." + p.type, p.type) + "</p>"
+        + '<div class="shop-card-footer">' + footerHtml(p, p.available === false) + "</div>"
+      + "</div>"
+    + "</article>";
   }).join("");
 
-  if (window.UOMI_I18N && window.UOMI_I18N.apply) {
-    window.UOMI_I18N.apply();
+  /* Filters: by type and by price range */
+  var TYPES  = ["ashtray", "small", "large", "mug", "bowl", "vase", "plate", "jewelry"];
+  var PRICE_MAX = 220;
+
+  function option(value, key, fallback) {
+    return '<option value="' + value + '" data-i18n="' + key + '">' + tr(key, fallback) + "</option>";
   }
+
+  var bar = document.createElement("div");
+  bar.className = "shop-filters";
+  bar.innerHTML =
+    '<label><span data-i18n="shop.filter.type">' + tr("shop.filter.type", "Type") + "</span>"
+    + '<select id="filterType">' + option("", "shop.filter.all", "All")
+    + TYPES.map(function (t) { return option(t, "type." + t, t); }).join("")
+    + "</select></label>"
+    + '<div class="price-filter"><span class="price-filter-title" data-i18n="shop.filter.price">' + tr("shop.filter.price", "Price") + "</span>"
+    + '<div class="price-slider">'
+      + '<div class="price-track"></div>'
+      + '<input type="range" id="priceMin" min="0" max="' + PRICE_MAX + '" step="1" value="0" aria-label="Minimum price"/>'
+      + '<input type="range" id="priceMax" min="0" max="' + PRICE_MAX + '" step="1" value="' + PRICE_MAX + '" aria-label="Maximum price"/>'
+    + "</div>"
+    + '<span class="price-values" id="priceValues"></span></div>';
+  grid.parentNode.insertBefore(bar, grid);
+
+  var empty = document.createElement("p");
+  empty.className = "shop-empty-filter";
+  empty.hidden = true;
+  empty.setAttribute("data-i18n", "shop.filter.empty");
+  empty.textContent = tr("shop.filter.empty", "No pieces match these filters.");
+  grid.parentNode.insertBefore(empty, grid.nextSibling);
+
+  function applyFilters() {
+    var type  = document.getElementById("filterType").value;
+    var minEl = document.getElementById("priceMin");
+    var maxEl = document.getElementById("priceMax");
+    var lo = Math.min(+minEl.value, +maxEl.value);
+    var hi = Math.max(+minEl.value, +maxEl.value);
+    document.getElementById("priceValues").textContent = "€" + lo + " – €" + hi;
+
+    // coloured part of the track between the two handles
+    var track = bar.querySelector(".price-track");
+    track.style.setProperty("--lo", (lo / PRICE_MAX * 100) + "%");
+    track.style.setProperty("--hi", (hi / PRICE_MAX * 100) + "%");
+
+    var shown = 0;
+    grid.querySelectorAll(".shop-card").forEach(function (card) {
+      var price = parseFloat(card.getAttribute("data-price"));
+      var ok = (!type || card.getAttribute("data-type") === type)
+            && price >= lo && price <= hi;
+      card.hidden = !ok;
+      if (ok) shown++;
+    });
+    empty.hidden = shown > 0;
+  }
+  bar.addEventListener("input", applyFilters);
+  bar.addEventListener("change", applyFilters);
+  applyFilters();
+
+  /* Image carousel: previous / next */
+  grid.addEventListener("click", function (e) {
+    var btn = e.target.closest(".shop-img-nav");
+    if (!btn) return;
+    var box  = btn.parentNode;
+    var imgs = box.querySelectorAll("img");
+    var idx  = parseInt(box.getAttribute("data-index"), 10) || 0;
+    idx = (idx + (btn.classList.contains("next") ? 1 : -1) + imgs.length) % imgs.length;
+    imgs.forEach(function (im, i) { im.hidden = i !== idx; });
+    box.setAttribute("data-index", idx);
+    box.querySelector(".shop-img-count").textContent = (idx + 1) + " / " + imgs.length;
+  });
+
+  /* Automatic "Sold": ask the Orders sheet which pieces already have a paid order */
+  function markSold(ids) {
+    ids.forEach(function (id) {
+      var card = grid.querySelector('.shop-card[data-id="' + id + '"]');
+      var p = prods.filter(function (x) { return x.id === id; })[0];
+      if (!card || !p) return;
+      card.querySelector(".shop-card-footer").innerHTML = soldHtml();
+    });
+  }
+
+  (function loadSold() {
+    var cb  = "sold_cb_" + Date.now();
+    var tag = document.createElement("script");
+    window[cb] = function (data) {
+      if (data && data.sold) markSold(data.sold);
+      delete window[cb];
+      if (tag.parentNode) tag.parentNode.removeChild(tag);
+    };
+    tag.src = SCRIPT_URL + "?action=sold&callback=" + cb;
+    tag.onerror = function () { delete window[cb]; };
+    document.head.appendChild(tag);
+  })();
+
+  if (i18n && i18n.apply) i18n.apply();
+})();
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOPBAR RACE — 12 UOMI figures race along the whole bar, from the left edge of
+   the screen to the right edge, all on the same line, each at a different speed
+   and with its own running style. A new race every RACE_EVERY ms.
+
+   The figures are drawn on a <canvas> at the screen's real pixel density (so
+   they stay sharp) with the same anatomy as the UOMI designs in figures.js:
+     head oval · egg body · arm = 10 + 20 + 5 (shoulder, elbow, wrist, hand)
+     leg = 15 + 25 (hip, knee, ankle)
+   Joint angles come from a simple run cycle (thigh swing, knee flexion that
+   peaks while the leg recovers, opposite arm swing with bent elbow, forward
+   lean, small bounce). Not shown if the visitor prefers reduced motion.
+═══════════════════════════════════════════════════════════════════════════ */
+(function topbarRace() {
+  var RUNNERS    = 12;
+  var RACE_EVERY = 15000; // ms between races
+  var MIN_TIME   = 5500;  // ms — fastest possible runner
+  var MAX_TIME   = 10500; // ms — slowest possible runner (must stay < RACE_EVERY)
+  var FIRST_RACE = 2500;  // ms after page load for the first race
+  var FIG_H      = 62;    // px, figure height (head top to feet)
+  var COLOR      = "#111";
+
+  var topbar = document.querySelector(".topbar");
+  if (!topbar) return;
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  var lane = document.createElement("div");
+  lane.className = "runner-lane";
+  lane.setAttribute("aria-hidden", "true");
+  var canvas = document.createElement("canvas");
+  lane.appendChild(canvas);
+  topbar.appendChild(lane);
+  var ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  var W = 0, H = 0, DPR = 1;
+  function resize() {
+    var r = topbar.getBoundingClientRect();
+    DPR = window.devicePixelRatio || 1;
+    W = Math.round(r.width);
+    H = Math.round(r.height);
+    lane.style.width    = W + "px";
+    canvas.style.width  = W + "px";
+    canvas.style.height = H + "px";
+    canvas.width  = Math.round(W * DPR);
+    canvas.height = Math.round(H * DPR);
+  }
+  resize();
+  window.addEventListener("resize", resize);
+
+  /* ── Figure geometry (design units, as in figures.js) ────────────────────── */
+  var UNITS_H = 134;           // head top (0) … feet (130) + stroke
+  var HIP_Y   = 88;            // body rotates around this point
+  var ARM     = [10, 20, 5];   // upper arm, forearm, hand
+  var LEG     = [15, 25];      // thigh, shin
+  var FOOT_Y  = 130;           // ground line in design units
+
+  var BODY = new Path2D(
+    "M0 25 C6 25,10 35,11 50 C13 68,14 85,0 85 C-14 85,-13 68,-11 50 C-10 35,-6 25,0 25 Z");
+
+  /* Angles are measured from "straight down"; forward (+x) is positive. */
+  function chain(x, y, lens, angs) {
+    var pts = [[x, y]];
+    for (var i = 0; i < lens.length; i++) {
+      x += Math.sin(angs[i]) * lens[i];
+      y += Math.cos(angs[i]) * lens[i];
+      pts.push([x, y]);
+    }
+    return pts;
+  }
+
+  function legAngles(g, p) {
+    var thigh = g.thighAmp * Math.sin(p) + g.lean * 0.5;
+    var flex  = g.kneeMin + (g.kneeMax - g.kneeMin) * (0.5 + 0.5 * Math.cos(p + 0.35));
+    return [thigh, thigh - flex];            // the knee bends the shin backwards
+  }
+
+  function armAngles(g, q, side) {
+    var d, w;
+    if (g.style === "airplane") {            // arms straight out, like f-out
+      d = side === 0 ? -1 : 1;
+      w = 0.08 * Math.sin(q);
+      return [d * (1.45 + w), d * (1.55 + w), d * (1.6 + w)];
+    }
+    if (g.style === "cheer") {               // arms up and waving, like f-up
+      d = side === 0 ? -1 : 1;
+      w = 0.3 * Math.sin(q * 0.5 + side * 2);
+      return [d * (2.75 + w * 0.4), d * (2.95 + w), d * (3.05 + w * 1.2)];
+    }
+    var u = g.armAmp * Math.sin(q);                       // upper arm swing
+    var e = g.elbow + 0.35 * Math.sin(q + 0.6);           // elbow bend (forward)
+    return [u, u + e, u + e + 0.3];                       // hand follows the wrist
+  }
+
+  function drawFigure(cx, groundY, g, phase) {
+    var s = FIG_H / UNITS_H;
+    var L = g.lean;
+    var cosL = Math.cos(L), sinL = Math.sin(L);
+
+    /* legs first, to know how far the body must drop to touch the ground */
+    var legs = [], lowest = -1e9;
+    for (var k = 0; k < 2; k++) {
+      var dx = k === 0 ? 6 : -6, dy = 90 - HIP_Y;
+      var hx = dx * cosL - dy * sinL, hy = HIP_Y + dx * sinL + dy * cosL;
+      var pts = chain(hx, hy, LEG, legAngles(g, phase + k * Math.PI));
+      legs.push(pts);
+      lowest = Math.max(lowest, pts[2][1]);
+    }
+    var lift  = g.bounce * Math.abs(Math.sin(phase));
+    var shift = (FOOT_Y - lowest) - lift;                 // design units, + = down
+
+    function X(x) { return cx + x * s; }
+    function Y(y) { return groundY + (y + shift - FOOT_Y) * s; }
+
+    function stroke(pts) {
+      ctx.beginPath();
+      ctx.moveTo(X(pts[0][0]), Y(pts[0][1]));
+      for (var i = 1; i < pts.length; i++) ctx.lineTo(X(pts[i][0]), Y(pts[i][1]));
+      ctx.stroke();
+    }
+
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = COLOR;
+    ctx.fillStyle = COLOR;
+    ctx.lineWidth = 3.6 * s;
+
+    /* head + body, rotated around the hip */
+    ctx.save();
+    ctx.translate(X(0), Y(HIP_Y));
+    ctx.rotate(L);
+    ctx.scale(s, s);
+    ctx.translate(0, -HIP_Y);
+    ctx.beginPath();
+    ctx.ellipse(0, 10, 5, 10, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fill(BODY);
+    ctx.restore();
+
+    /* arms: shoulders at (±14, 32); each arm swings opposite to the leg on its side */
+    for (var j = 0; j < 2; j++) {
+      var sdx = j === 0 ? -14 : 14, sdy = 32 - HIP_Y;
+      var sx = sdx * cosL - sdy * sinL, sy = HIP_Y + sdx * sinL + sdy * cosL;
+      var q = phase + (j === 0 ? 0 : Math.PI);
+      stroke(chain(sx, sy, ARM, armAngles(g, q, j)));
+    }
+    stroke(legs[0]);
+    stroke(legs[1]);
+  }
+
+  /* ── Runner personalities ────────────────────────────────────────────────── */
+  function rand(a, b) { return a + Math.random() * (b - a); }
+
+  function makeRunner(style, dist) {
+    var time  = rand(MIN_TIME, MAX_TIME);
+    var speed = dist / (time / 1000);                          // px / s
+    var fast  = 1 - (time - MIN_TIME) / (MAX_TIME - MIN_TIME); // 0 slow … 1 fast
+    var g = {
+      style:    style,
+      time:     time,
+      delay:    rand(0, 250),
+      cps:      Math.max(1.8, Math.min(5.2, speed / 70)) * rand(0.9, 1.1), // stride cycles / s
+      phase0:   rand(0, Math.PI * 2),
+      lean:     0.06 + 0.2 * fast + rand(-0.03, 0.03),
+      thighAmp: rand(0.5, 0.72) + 0.25 * fast,
+      kneeMin:  rand(0.1, 0.25),
+      kneeMax:  rand(0.9, 1.25) + 0.3 * fast,
+      armAmp:   rand(0.5, 0.8) + 0.2 * fast,
+      elbow:    rand(1.1, 1.6),
+      bounce:   rand(2, 5) + 3 * fast,
+      surge:    rand(0.005, 0.015),
+      surgePh:  rand(0, 6)
+    };
+    if (style === "sprinter") {
+      g.lean += 0.12; g.kneeMax += 0.3; g.thighAmp += 0.15; g.bounce += 2;
+    }
+    return g;
+  }
+
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  var racing = false;
+  function race() {
+    if (racing || document.hidden) return;
+    resize();
+    if (W < 200) return;
+    racing = true;
+
+    var from = -40, to = W + 40, dist = to - from;
+    var styles = ["airplane", "cheer", "sprinter"];
+    while (styles.length < RUNNERS) styles.push("run");
+    shuffle(styles);
+    var runners = styles.map(function (st) { return makeRunner(st, dist); });
+
+    var start = null;
+    function frame(now) {
+      if (start === null) start = now;
+      var elapsed = now - start, pending = 0;
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+      var groundY = H - 4;
+      runners.forEach(function (r) {
+        var t = Math.min(Math.max((elapsed - r.delay) / r.time, 0), 1);
+        if (t >= 1) return;
+        pending++;
+        if (t <= 0) return;
+        /* a little surge/lag so they don't all move at a constant speed */
+        var prog = t + r.surge * Math.sin(6 * Math.PI * t + r.surgePh)
+                     - r.surge * Math.sin(r.surgePh) * (1 - t);
+        var x = Math.round((from + dist * prog) * DPR) / DPR;   // whole device pixels
+        var phase = r.phase0 + 2 * Math.PI * r.cps * ((elapsed - r.delay) / 1000);
+        drawFigure(x, groundY, r, phase);
+      });
+      if (pending) {
+        window.requestAnimationFrame(frame);
+      } else {
+        ctx.clearRect(0, 0, W, H);
+        racing = false;
+      }
+    }
+    window.requestAnimationFrame(frame);
+  }
+
+  window.setTimeout(function () {
+    race();
+    window.setInterval(race, RACE_EVERY);
+  }, FIRST_RACE);
 })();
