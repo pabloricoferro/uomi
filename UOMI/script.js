@@ -1794,10 +1794,28 @@ if (yearEl) {
     return pts;
   }
 
+  /* Ciclo de carrera con posiciones clave de la biomecánica (vista lateral, 8 cuadros por zancada).
+     Fase de la pierna: 0 = apoya el pie delante, 0.25 = apoyo medio (pierna bajo el cuerpo),
+     0.5 = despegue, 0.62-0.75 = el talón sube hacia el glúteo, 0.88 = la rodilla adelanta y baja el pie.
+     Ángulos en grados desde "recto abajo"; muslo adelante (+); rodilla = flexión de la pierna hacia atrás. */
+  var RUN_THIGH = [32, 14, -2, -20, -26, -8, 22, 42];
+  var RUN_KNEE  = [18, 38, 28, 22, 55, 105, 105, 55];
+  var D2R = Math.PI / 180;
+
+  /* interpolación cíclica suave (Catmull-Rom) entre las 8 posiciones clave */
+  function cyc(table, p) {
+    var n = table.length;
+    var f = ((p / (2 * Math.PI)) % 1 + 1) % 1 * n;
+    var i = Math.floor(f), t = f - i;
+    var a = table[(i + n - 1) % n], b = table[i % n], c = table[(i + 1) % n], d = table[(i + 2) % n];
+    return 0.5 * (2 * b + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t * t + (-a + 3 * b - 3 * c + d) * t * t * t);
+  }
+
   function legAngles(g, p) {
-    var thigh = g.thighAmp * Math.sin(p) + g.lean * 0.5;
-    var flex  = g.kneeMin + (g.kneeMax - g.kneeMin) * (0.5 + 0.5 * Math.cos(p + 0.35));
-    return [thigh, thigh - flex];            // the knee bends the shin backwards
+    var k = Math.min(1.35, Math.max(0.8, g.thighAmp / 0.65));   // más rápido = zancada más amplia
+    var thigh = cyc(RUN_THIGH, p) * k * D2R + g.lean * 0.4;
+    var knee  = cyc(RUN_KNEE, p) * (0.85 + 0.15 * k) * D2R;
+    return [thigh, thigh - knee];            // la rodilla dobla la pierna hacia atrás
   }
 
   function armAngles(g, q, side) {
@@ -1812,9 +1830,12 @@ if (yearEl) {
       w = 0.3 * Math.sin(q * 0.5 + side * 2);
       return [d * (2.75 + w * 0.4), d * (2.95 + w), d * (3.05 + w * 1.2)];
     }
-    var u = g.armAmp * Math.sin(q);                       // upper arm swing
-    var e = g.elbow + 0.35 * Math.sin(q + 0.6);           // elbow bend (forward)
-    return [u, u + e, u + e + 0.3];                       // hand follows the wrist
+    /* Brazo contrario a la pierna: adelantado cuando esa pierna apoya delante (q = 0).
+       Codo en ~90°: más cerrado al ir adelante y más abierto al ir atrás; la mano sigue al antebrazo. */
+    var k = Math.min(1.3, Math.max(0.8, g.armAmp / 0.6));
+    var u = (4 + 46 * Math.cos(q)) * k * D2R;                        // brazo superior
+    var e = (88 - 14 * Math.cos(q)) * D2R;                           // flexión del codo
+    return [u, u + e, u + e + 12 * D2R];
   }
 
   /* Puntos de la cabeza y el cuerpo (para saber qué toca el suelo cuando está tumbado). */
@@ -1855,7 +1876,8 @@ if (yearEl) {
         lowest = Math.max(lowest, HIP_Y + BODY_SAMPLES[b][0] * sinL + by * cosL - 1.8);
       }
     } else {
-      lift = g.bounce * Math.abs(Math.sin(phase));
+      /* rebote: el cuerpo sube en el vuelo (justo antes de cada apoyo) y baja en el apoyo medio */
+      lift = g.bounce * (0.5 - 0.5 * Math.cos(2 * phase - 2.52));
     }
     var shift = (FOOT_Y - lowest) - lift;                 // design units, + = down
 
