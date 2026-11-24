@@ -941,42 +941,49 @@ if (yearEl) {
     + '<polyline class="fig-leg-l" points="-6,90 -6,105 -6,130"/>'
     + "</g></g></svg>";
 
-  const FALL_ROTATE = "rotate(180 0 70)";
-  const FALL_FLAIL_STEP_MS = 180;
-
-  function fallArm(side, a1, a2, a3) {
-    const o = side === "r" ? SHOULDER_R : SHOULDER_L;
-    return chainPts(o, ARM_LEN, [a1, a2, a3]);
-  }
-
+  /* Caída: el muñeco acelera con la gravedad, da vueltas (voltereta lenta que se
+     endereza cabeza abajo justo antes de entrar en la O), se balancea de lado a lado
+     por el aire y mueve brazos y piernas de forma continua, con codos y rodillas. */
   const FALL_INTERVAL_MS = 7000;
-  const FALL_LEGS_STRAIGHT = {
-    r: legPts(HIP_R_X, FOOT_R_X, HIP_R_X, 0),
-    l: legPts(HIP_L_X, FOOT_L_X, HIP_L_X, 0),
-  };
+  const FALL_HEAD_DOWN = 180;     // orientación al entrar en la O (cabeza hacia abajo)
+  const FALL_FLAIL_HZ = 2.7;      // aleteo de brazos y piernas por segundo
+  const FALL_LEG_UPPER = 15;
+  const FALL_LEG_LOWER = 25;
+  const FALL_HIP_Y = 90;
+  const FALL_PIVOT = "0 70";
 
-  const FALL_FLAIL_SEQUENCE = [
-    { armR: [20, 70, 55], armL: [160, 110, 120] },
-    { armR: [35, 80, 60], armL: [155, 100, 115] },
-    { armR: [10, 75, 50], armL: [165, 105, 125] },
-    { armR: [25, 85, 65], armL: [150, 95, 110] },
-  ];
+  function fallSin(w, phase) { return Math.sin(w + phase); }
 
-  function fallFlailIndex(elapsedMs) {
-    const len = FALL_FLAIL_SEQUENCE.length;
-    const i = Math.floor(Math.max(0, elapsedMs) / FALL_FLAIL_STEP_MS) % len;
-    return ((i % len) + len) % len;
-  }
-
-  function applyFallFlailFrame(svg, frame) {
-    if (!svg || !frame) return;
+  /* ms: tiempo desde que empezó la caída; theta: giro del cuerpo en grados;
+     calm (0..1): reduce el aleteo al entrar en la O. */
+  function applyFallPose(svg, ms, theta, calm) {
+    if (!svg) return;
     const root = svg.querySelector(".fig-root");
     if (!root) return;
-    root.querySelector(".fig-arm-r").setAttribute("points", fallArm("r", frame.armR[0], frame.armR[1], frame.armR[2]));
-    root.querySelector(".fig-arm-l").setAttribute("points", fallArm("l", frame.armL[0], frame.armL[1], frame.armL[2]));
-    root.querySelector(".fig-leg-r").setAttribute("points", FALL_LEGS_STRAIGHT.r);
-    root.querySelector(".fig-leg-l").setAttribute("points", FALL_LEGS_STRAIGHT.l);
-    root.setAttribute("transform", FALL_ROTATE);
+    const amp = 1 - 0.35 * calm;
+    const w = (ms / 1000) * Math.PI * 2 * FALL_FLAIL_HZ;
+    /* Ángulos en grados "matemáticos" (0 = derecha, 90 = arriba), como chainPts.
+       Con el cuerpo boca abajo, los brazos arriba quedan hacia atrás: el aire los levanta. */
+    const sR = 50 + 34 * amp * fallSin(w, 0);
+    const eR = sR + 10 + 16 * amp * fallSin(w, -0.9);
+    const hR = eR + 10 * amp * fallSin(w, -1.7);
+    const sL = 130 - 34 * amp * fallSin(w, 2.4);
+    const eL = sL - 10 - 16 * amp * fallSin(w, 1.5);
+    const hL0 = eL - 10 * amp * fallSin(w, 0.7);
+    /* los brazos nunca se cruzan: el derecho se queda a la derecha del eje, el izquierdo a la izquierda */
+    const sRc = Math.min(sR, 86), eRc = Math.min(eR, 88), hRc = Math.min(hR, 90);
+    const sLc = Math.max(sL, 94), eLc = Math.max(eL, 92), hLc = Math.max(hL0, 90);
+    root.querySelector(".fig-arm-r").setAttribute("points", chainPts(SHOULDER_R, ARM_LEN, [sRc, eRc, hRc]));
+    root.querySelector(".fig-arm-l").setAttribute("points", chainPts(SHOULDER_L, ARM_LEN, [sLc, eLc, hLc]));
+    /* piernas: el muslo se abre y la rodilla se dobla hacia atrás, en contrafase */
+    const tR = -90 + 26 * amp * fallSin(w, 1.0);
+    const kR = tR - 12 - 22 * amp * (0.5 + 0.5 * fallSin(w, 1.0 + 0.8));
+    const tL = -90 - 26 * amp * fallSin(w, 2.2);
+    const kL = tL + 12 + 22 * amp * (0.5 + 0.5 * fallSin(w, 2.2 + 0.8));
+    root.querySelector(".fig-leg-r").setAttribute("points", chainPts([HIP_R_X, FALL_HIP_Y], [FALL_LEG_UPPER, FALL_LEG_LOWER], [tR, kR]));
+    root.querySelector(".fig-leg-l").setAttribute("points", chainPts([HIP_L_X, FALL_HIP_Y], [FALL_LEG_UPPER, FALL_LEG_LOWER], [tL, kL]));
+    root.style.transition = "none";
+    root.setAttribute("transform", "rotate(" + theta.toFixed(2) + " " + FALL_PIVOT + ")");
   }
 
   const FALL_VIEW_FOOT_Y = 130;
@@ -989,7 +996,7 @@ if (yearEl) {
 
     slot.innerHTML = FALL_O_SVG;
     const svg = slot.querySelector("svg");
-    applyFallFlailFrame(svg, FALL_FLAIL_SEQUENCE[0]);
+    applyFallPose(svg, 0, 110, 0);
 
     let rafId = 0;
     let timeoutIds = [];
@@ -1082,63 +1089,63 @@ if (yearEl) {
       slot.style.clipPath = "none";
       slot.style.opacity = "1";
       slot.style.visibility = "visible";
-      applyFallFlailFrame(svg, FALL_FLAIL_SEQUENCE[0]);
+      applyFallPose(svg, 0, 110, 0);
 
       const m = measure();
       slot.style.left = `${m.left}px`;
 
-      const fallMs = 2200;
-      const enterMs = 1100;
+      /* Una sola caída con gravedad constante: y = startY + ½·g·t².
+         Llega a la O ya a toda velocidad y la atraviesa sin frenar. */
+      const fallMs = 2700;
+      const dist = m.endY - m.startY;
+      const g = (2 * dist) / (fallMs * fallMs);            // px / ms²
+      const total = m.endY + m.enterDepth;
       const t0 = performance.now();
+      const easeOut = (x) => 1 - (1 - x) * (1 - x);
 
-      function fallFrame(now) {
-        const t = Math.min(1, (now - t0) / fallMs);
-        const y = m.startY + (m.endY - m.startY) * t;
-        applyFallFlailFrame(svg, FALL_FLAIL_SEQUENCE[fallFlailIndex(now - t0)]);
-        slot.style.clipPath = "none";
-        slot.style.transform = `translate3d(0,${y}px,0)`;
-        if (t < 1) {
-          rafId = requestAnimationFrame(fallFrame);
+      function frame(now) {
+        const dt = now - t0;
+        const y = m.startY + 0.5 * g * dt * dt;
+        const p = Math.min(1, Math.max(0, (y - m.startY) / dist));   // 0 arriba … 1 en la O
+        /* voltereta: empieza de lado y se endereza cabeza abajo al llegar a la O,
+           con un pequeño bamboleo que se apaga */
+        const inv = 1 - p;
+        const theta = FALL_HEAD_DOWN - 80 * inv * inv + 14 * Math.sin(p * 10) * inv;
+        /* deriva lateral suave, como si el aire lo empujara */
+        const sway = 7 * Math.sin(p * 6.5 + 0.6) * inv;
+        const entering = y > m.endY;
+        const u = entering ? Math.min(1, (y - m.endY) / m.enterDepth) : 0;
+        applyFallPose(svg, dt, theta, easeOut(Math.min(1, p)));
+        slot.style.transform = `translate3d(${sway}px,${y}px,0)`;
+        if (!entering) {
+          slot.style.clipPath = "none";
+          rafId = requestAnimationFrame(frame);
           return;
         }
-        const t1 = performance.now();
-
-        function enterFrame(now) {
-          const u = Math.min(1, (now - t1) / enterMs);
-          const y = m.endY + m.enterDepth * u;
-          applyFallFlailFrame(svg, FALL_FLAIL_SEQUENCE[fallFlailIndex(now - t1)]);
-          slot.style.transform = `translate3d(0,${y}px,0)`;
-          // Se desvanece mientras se hunde en la O (sin brazos/piernas sueltos).
-          slot.style.opacity = String(Math.max(0, 1 - u * 1.15) ** 1.4);
-          const oNow = oEl.getBoundingClientRect();
-          const slotNow = slot.getBoundingClientRect();
-          const hole = holeViewport(oNow);
-          // El clip arranca exactamente cuando el fondo del slot llega al borde
-          // inferior del hueco (clipFromBottom = 0 → transición sin salto).
-          // A medida que la figura sigue cayendo, el recorte crece y las piernas
-          // desaparecen progresivamente por debajo del borde inferior de la O.
-          if (slotNow.bottom >= hole.bottom) {
-            const clipFromBottom = slotNow.bottom - hole.bottom;
-            slot.style.clipPath = `inset(0 0 ${clipFromBottom}px 0)`;
-          } else {
-            slot.style.clipPath = "none";
-          }
-          if (u < 1) {
-            rafId = requestAnimationFrame(enterFrame);
-            return;
-          }
+        /* se hunde en la O: se desvanece y el fondo del slot se recorta al pasar el
+           borde inferior del hueco (sin brazos/piernas sueltos) */
+        slot.style.opacity = String(Math.max(0, 1 - u * 1.15) ** 1.4);
+        const oNow = oEl.getBoundingClientRect();
+        const slotNow = slot.getBoundingClientRect();
+        const hole = holeViewport(oNow);
+        if (slotNow.bottom >= hole.bottom) {
+          slot.style.clipPath = `inset(0 0 ${slotNow.bottom - hole.bottom}px 0)`;
+        } else {
           slot.style.clipPath = "none";
-          slot.style.visibility = "hidden";
-          slot.style.opacity = "1";
-          slot.style.transform = "";
-          scheduleNextCycle();
         }
-
-        rafId = requestAnimationFrame(enterFrame);
+        if (y < total) {
+          rafId = requestAnimationFrame(frame);
+          return;
+        }
+        slot.style.clipPath = "none";
+        slot.style.visibility = "hidden";
+        slot.style.opacity = "1";
+        slot.style.transform = "";
+        scheduleNextCycle();
       }
 
       slot.style.transform = `translate3d(0,${m.startY}px,0)`;
-      rafId = requestAnimationFrame(fallFrame);
+      rafId = requestAnimationFrame(frame);
     }
 
     const onResize = () => {
@@ -1731,7 +1738,7 @@ if (yearEl) {
 ═══════════════════════════════════════════════════════════════════════════ */
 (function topbarRace() {
   var RUNNERS    = 12;
-  var RACE_EVERY = 15000; // ms between races
+  var RACE_EVERY = 25000; // ms between race starts (a race lasts up to ~14.5 s incl. the tripper)
   var MIN_TIME   = 5500;  // ms — fastest possible runner
   var MAX_TIME   = 10500; // ms — slowest possible runner (must stay < RACE_EVERY)
   var FIRST_RACE = 2500;  // ms after page load for the first race
@@ -1810,9 +1817,15 @@ if (yearEl) {
     return [u, u + e, u + e + 0.3];                       // hand follows the wrist
   }
 
-  function drawFigure(cx, groundY, g, phase) {
+  /* Puntos de la cabeza y el cuerpo (para saber qué toca el suelo cuando está tumbado). */
+  var BODY_SAMPLES = [[0, 0], [0, 20], [5, 10], [-5, 10], [0, 25], [11, 50], [14, 70],
+                      [0, 85], [-14, 70], [-11, 50]];
+
+  /* `ov` (opcional) fuerza la pose: { L, legs:[[muslo,pierna],[..]], arms:[[3],[3]] }.
+     Se usa para la caída; sin `ov` se calcula el ciclo normal de carrera. */
+  function drawFigure(cx, groundY, g, phase, ov) {
     var s = FIG_H / UNITS_H;
-    var L = g.lean;
+    var L = ov ? ov.L : g.lean;
     var cosL = Math.cos(L), sinL = Math.sin(L);
 
     /* legs first, to know how far the body must drop to touch the ground */
@@ -1820,11 +1833,30 @@ if (yearEl) {
     for (var k = 0; k < 2; k++) {
       var dx = k === 0 ? 6 : -6, dy = 90 - HIP_Y;
       var hx = dx * cosL - dy * sinL, hy = HIP_Y + dx * sinL + dy * cosL;
-      var pts = chain(hx, hy, LEG, legAngles(g, phase + k * Math.PI));
+      var pts = chain(hx, hy, LEG, ov ? ov.legs[k] : legAngles(g, phase + k * Math.PI));
       legs.push(pts);
       lowest = Math.max(lowest, pts[2][1]);
     }
-    var lift  = g.bounce * Math.abs(Math.sin(phase));
+    var arms = [];
+    for (var a = 0; a < 2; a++) {
+      var sdx = a === 0 ? -14 : 14, sdy = 32 - HIP_Y;
+      var sx = sdx * cosL - sdy * sinL, sy = HIP_Y + sdx * sinL + sdy * cosL;
+      arms.push(chain(sx, sy, ARM, ov ? ov.arms[a] : armAngles(g, phase + (a === 0 ? 0 : Math.PI), a)));
+    }
+    var lift = 0;
+    if (ov) {
+      /* tumbado: lo más bajo puede ser el cuerpo, la cabeza o las manos, no solo los pies */
+      for (var i = 0; i < 2; i++) {
+        for (var m = 0; m < legs[i].length; m++) lowest = Math.max(lowest, legs[i][m][1]);
+        for (var n = 0; n < arms[i].length; n++) lowest = Math.max(lowest, arms[i][n][1]);
+      }
+      for (var b = 0; b < BODY_SAMPLES.length; b++) {
+        var by = BODY_SAMPLES[b][1] - HIP_Y;
+        lowest = Math.max(lowest, HIP_Y + BODY_SAMPLES[b][0] * sinL + by * cosL - 1.8);
+      }
+    } else {
+      lift = g.bounce * Math.abs(Math.sin(phase));
+    }
     var shift = (FOOT_Y - lowest) - lift;                 // design units, + = down
 
     function X(x) { return cx + x * s; }
@@ -1856,14 +1888,70 @@ if (yearEl) {
     ctx.restore();
 
     /* arms: shoulders at (±14, 32); each arm swings opposite to the leg on its side */
-    for (var j = 0; j < 2; j++) {
-      var sdx = j === 0 ? -14 : 14, sdy = 32 - HIP_Y;
-      var sx = sdx * cosL - sdy * sinL, sy = HIP_Y + sdx * sinL + sdy * cosL;
-      var q = phase + (j === 0 ? 0 : Math.PI);
-      stroke(chain(sx, sy, ARM, armAngles(g, q, j)));
-    }
+    stroke(arms[0]);
+    stroke(arms[1]);
     stroke(legs[0]);
     stroke(legs[1]);
+  }
+
+  /* ── Tropiezo: un corredor se cae a mitad de camino, se levanta y sigue ─────
+     Ángulos como en el ciclo de carrera: desde "recto abajo", adelante (+) positivo. */
+  var TRIP_T1 = 380, TRIP_T2 = 420, TRIP_T3 = 800, TRIP_T4 = 1000;   // ms: tropieza, cae, tumbado, se levanta
+  var TRIP_TOTAL = TRIP_T1 + TRIP_T2 + TRIP_T3 + TRIP_T4;
+  var P_STUMBLE = { L: 0.8,  legs: [[0.35, 0.0], [-0.9, -1.7]],   arms: [[2.3, 2.5, 2.6], [2.1, 2.4, 2.5]] };
+  var P_PRONE   = { L: 1.45, legs: [[-1.3, -1.5], [-1.45, -1.2]], arms: [[1.7, 1.6, 1.5], [1.6, 1.5, 1.4]] };
+  var P_PUSH    = { L: 1.0,  legs: [[-0.5, -1.6], [-0.8, -1.9]],  arms: [[0.55, 0.35, 0.2], [0.45, 0.3, 0.15]] };
+  var P_CROUCH  = { L: 0.45, legs: [[0.9, -0.1], [-0.3, -0.4]],   arms: [[-0.3, 0.3, 0.6], [0.1, 0.5, 0.8]] };
+
+  function lerp(a, b, u) { return a + (b - a) * u; }
+  function lerpArr(a, b, u) { return a.map(function (v, i) { return lerp(v, b[i], u); }); }
+  function smooth(u) { u = Math.min(1, Math.max(0, u)); return u * u * (3 - 2 * u); }
+  function mixPose(a, b, u) {
+    return {
+      L: lerp(a.L, b.L, u),
+      legs: [lerpArr(a.legs[0], b.legs[0], u), lerpArr(a.legs[1], b.legs[1], u)],
+      arms: [lerpArr(a.arms[0], b.arms[0], u), lerpArr(a.arms[1], b.arms[1], u)]
+    };
+  }
+  function runPose(g, phase) {
+    return {
+      L: g.lean,
+      legs: [legAngles(g, phase), legAngles(g, phase + Math.PI)],
+      arms: [armAngles(g, phase, 0), armAngles(g, phase + Math.PI, 1)]
+    };
+  }
+  function clonePose(p) {
+    return { L: p.L, legs: p.legs.map(function (x) { return x.slice(); }), arms: p.arms.map(function (x) { return x.slice(); }) };
+  }
+
+  /* k: ms desde que empezó el tropiezo; phase: fase de la zancada en ese momento */
+  function tripPose(g, k, phase) {
+    var run0 = runPose(g, phase), u, p;
+    if (k < TRIP_T1) {                                       // tropieza: se inclina y lanza los brazos
+      p = mixPose(run0, P_STUMBLE, smooth(k / TRIP_T1));
+      p.arms[0][1] += 0.18 * Math.sin(k / 38);
+      p.arms[1][1] -= 0.18 * Math.sin(k / 38);
+      return p;
+    }
+    k -= TRIP_T1;
+    if (k < TRIP_T2) {                                       // cae hacia delante, acelerando
+      u = k / TRIP_T2;
+      return mixPose(P_STUMBLE, P_PRONE, u * u);
+    }
+    k -= TRIP_T2;
+    if (k < TRIP_T3) {                                       // tumbado, aturdido
+      u = k / TRIP_T3;
+      p = clonePose(P_PRONE);
+      p.L += 0.02 * Math.sin(u * 14);
+      p.arms[0][1] += 0.25 * Math.sin(u * 9);
+      p.legs[0][1] += 0.12 * Math.sin(u * 16);
+      return p;
+    }
+    k -= TRIP_T3;
+    u = k / TRIP_T4;                                         // se levanta y retoma la carrera
+    if (u < 0.45) return mixPose(P_PRONE, P_PUSH, smooth(u / 0.45));
+    if (u < 0.8)  return mixPose(P_PUSH, P_CROUCH, smooth((u - 0.45) / 0.35));
+    return mixPose(P_CROUCH, run0, smooth((u - 0.8) / 0.2));
   }
 
   /* ── Runner personalities ────────────────────────────────────────────────── */
@@ -1915,6 +2003,31 @@ if (yearEl) {
     shuffle(styles);
     var runners = styles.map(function (st) { return makeRunner(st, dist); });
 
+    /* Uno de los corredores "normales" tropieza a mitad de camino, se cae, se levanta y sigue. */
+    var plain = runners.filter(function (r) { return r.style === "run"; });
+    if (plain.length) {
+      var tripper = plain[Math.floor(Math.random() * plain.length)];
+      var tripSpeed = dist / (tripper.time / 1000);              // px / s
+      /* Sale 1 s después del último de los demás, para que su caída junto al logo se vea sola. */
+      var lastOther = 0;
+      runners.forEach(function (r) { if (r !== tripper) lastOther = Math.max(lastOther, r.delay); });
+      tripper.delay = lastOther + 1000;
+      tripper.trip = {
+        at:    tripFraction(),                                   // fracción de su carrera: justo tras cruzar el logo
+        total: TRIP_TOTAL,
+        slide: Math.min(80, tripSpeed * 0.4)                     // px que se desliza hacia delante al caer
+      };
+    }
+
+    /* El logo UOMI de la barra: el corredor tropieza unos px después de su borde derecho. */
+    function tripFraction() {
+      var logo = document.querySelector(".topbar .brand img") || document.querySelector(".topbar .brand");
+      var barLeft = topbar.getBoundingClientRect().left;
+      var logoRight = logo ? logo.getBoundingClientRect().right - barLeft : 120;
+      var x = logoRight + 46;                                      // un par de zancadas más allá del logo
+      return Math.min(0.5, Math.max(0.02, (x - from) / dist));
+    }
+
     var start = null;
     function frame(now) {
       if (start === null) start = now;
@@ -1923,16 +2036,35 @@ if (yearEl) {
       ctx.clearRect(0, 0, W, H);
       var groundY = H - 4;
       runners.forEach(function (r) {
-        var t = Math.min(Math.max((elapsed - r.delay) / r.time, 0), 1);
+        var local = elapsed - r.delay;
+        var span = r.time + (r.trip ? r.trip.total : 0);          // la caída alarga su carrera
+        var t = Math.min(Math.max(local / span, 0), 1);
         if (t >= 1) return;
         pending++;
         if (t <= 0) return;
+
+        /* tiempo "corriendo": se congela mientras está tropezando/caído */
+        var runLocal = local, tk = -1, xOff = 0, tripStart = 0;
+        if (r.trip) {
+          tripStart = r.trip.at * r.time;
+          tk = local - tripStart;
+          if (tk > 0) {
+            runLocal = tk < r.trip.total ? tripStart : local - r.trip.total;
+            var su = Math.min(1, tk / 900);
+            xOff = r.trip.slide * (1 - (1 - su) * (1 - su));        // se desliza y frena
+          }
+        }
+        var tRun = Math.min(Math.max(runLocal / r.time, 0), 1);
         /* a little surge/lag so they don't all move at a constant speed */
-        var prog = t + r.surge * Math.sin(6 * Math.PI * t + r.surgePh)
-                     - r.surge * Math.sin(r.surgePh) * (1 - t);
-        var x = Math.round((from + dist * prog) * DPR) / DPR;   // whole device pixels
-        var phase = r.phase0 + 2 * Math.PI * r.cps * ((elapsed - r.delay) / 1000);
-        drawFigure(x, groundY, r, phase);
+        var prog = tRun + r.surge * Math.sin(6 * Math.PI * tRun + r.surgePh)
+                        - r.surge * Math.sin(r.surgePh) * (1 - tRun);
+        var x = Math.round((from + dist * prog + xOff) * DPR) / DPR;   // whole device pixels
+        var phase = r.phase0 + 2 * Math.PI * r.cps * (runLocal / 1000);
+        if (r.trip && tk > 0 && tk < r.trip.total) {
+          drawFigure(x, groundY, r, phase, tripPose(r, tk, phase));
+        } else {
+          drawFigure(x, groundY, r, phase);
+        }
       });
       if (pending) {
         window.requestAnimationFrame(frame);

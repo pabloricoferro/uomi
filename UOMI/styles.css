@@ -11,6 +11,9 @@
 html {
   font-synthesis: none;
   font-size: 112.5%;   /* la fuente UOMI tiene la x-height más baja que Inter: 18px base compensa */
+  /* Reserva siempre el hueco de la barra de scroll: así Home, Shop, About y Contact
+     quedan exactamente en la misma posición, tengan o no scroll. */
+  scrollbar-gutter: stable;
 }
 
 button,
